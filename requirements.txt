@@ -7,3 +7,5 @@ pandas
 pyarrow
 duckdb   # if you go this route
 pydantic
+plotly>=5.22
+openpyxl
