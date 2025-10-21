@@ -162,10 +162,11 @@ tab_overview, tab_explorer, tab_compare, tab_data = st.tabs(
 
 # Overview
 with tab_overview:
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
     c1.metric("Servers", show["server_name"].nunique())
     c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{int(yearly_rng['count'].sum()):,}")
-    c3.metric("Preprints (all-time, yearly)", f"{int(yearly['count'].sum()):,}")
+    c3.metric("Preprints (all-time, unique)", f"{int(summary['n_unique'].sum()):,}")
+    c4.metric("Preprints (all-time, + versions)", f"{int(summary['n_records'].sum()):,}") 
 
     st.markdown("---")
     st.write("**Top servers**")
