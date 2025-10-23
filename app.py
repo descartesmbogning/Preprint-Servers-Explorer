@@ -163,10 +163,24 @@ tab_overview, tab_explorer, tab_compare, tab_data = st.tabs(
 # Overview
 with tab_overview:
     c1, c2, c3 = st.columns(3)
-    c1.metric("Servers", show["server_name"].nunique())
-    c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{int(yearly_rng['count'].sum()):,}")
-    unique_all_time = int(pd.to_numeric(summary.get("n_unique", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+    # ── Metrics that reflect all active filters (source, min_count, and year range)
+    # Servers that have at least one preprint in the current year range
+    servers_in_range = yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].nunique()
+
+    # Total preprints in current range
+    total_preprints_range = int(yearly_rng["count"].sum())
+
+    # All-time unique preprints (filtered by source/min_count only)
+    unique_all_time = int(
+        pd.to_numeric(show.get("n_unique", pd.Series(dtype=float)), errors="coerce")
+        .fillna(0)
+        .sum()
+    )
+
+    c1.metric("Servers (active in selected range)", servers_in_range)
+    c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{total_preprints_range:,}")
     c3.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
+
 
     st.markdown("---")
     st.write("**Top servers**")
@@ -199,8 +213,9 @@ with tab_overview:
 
     # ── Guard: nothing to show# ── Guard: nothing to show
     n_rows = int(ranking.shape[0])
+
     if n_rows < 1:
-        st.info("No servers to show for the current filters/year range.")
+        st.info("No servers to show for the current filters or year range.")
     else:
         # Safe slider bounds
         if n_rows == 1:
@@ -209,31 +224,40 @@ with tab_overview:
         else:
             max_n = n_rows
             default_n = min(15, max_n)
-            topN = st.slider(
-                "Show top N",
-                min_value=1,
-                max_value=max_n,
-                value=default_n,
-                step=1,
-                key="topn_ranking"
-            )
+            # Streamlit requires min_value < max_value, so guard for equal case
+            if max_n == 1:
+                topN = 1
+                st.caption("Only one server available to display.")
+            else:
+                topN = st.slider(
+                    "Show top N",
+                    min_value=1,
+                    max_value=max_n,
+                    value=default_n,
+                    step=1,
+                    key="topn_ranking"
+                )
 
-        # Build chart from available rows
+        # Build chart safely even if topN was set manually
         top_df = ranking.sort_values("total", ascending=False).head(topN)
 
-        fig_bar = px.bar(
-            top_df,
-            x="total",
-            y="server_name",
-            orientation="h",
-            labels={"total": "Total preprints", "server_name": "Server"},
-            title=f"Top {topN} servers{rank_title_suffix}",
-        )
-        fig_bar.update_layout(
-            yaxis={"categoryorder": "total ascending"},
-            height=min(200 + 28 * len(top_df), 900),
-        )
-        st.plotly_chart(fig_bar, use_container_width=True)
+        if len(top_df) == 0:
+            st.info("No servers with counts greater than zero in this range.")
+        else:
+            fig_bar = px.bar(
+                top_df,
+                x="total",
+                y="server_name",
+                orientation="h",
+                labels={"total": "Total preprints", "server_name": "Server"},
+                title=f"Top {topN} servers{rank_title_suffix}",
+            )
+            fig_bar.update_layout(
+                yaxis={"categoryorder": "total ascending"},
+                height=min(200 + 28 * len(top_df), 900),
+            )
+            st.plotly_chart(fig_bar, use_container_width=True)
+
 
 
     
