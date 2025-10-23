@@ -141,7 +141,7 @@ yr_from, yr_to = st.sidebar.slider("Year range", yr_min, yr_max, (yr_min, yr_max
 yearly_rng = yearly[(yearly["year"] >= yr_from) & (yearly["year"] <= yr_to)]
 yearly_rng = yearly_rng[yearly_rng["server_name"].isin(show["server_name"])]
 
-# NEW: ranking mode toggle
+# Ranking mode toggle
 rank_mode = st.sidebar.radio(
     "Top servers ranking based on",
     ["Summary total (all-time)", "Year range (from yearly file)"],
@@ -162,61 +162,88 @@ tab_overview, tab_explorer, tab_compare, tab_data = st.tabs(
 
 # Overview
 with tab_overview:
-    c1, c2, c3 = st.columns(3) #(4) , c4
+    c1, c2, c3 = st.columns(3)
     c1.metric("Servers", show["server_name"].nunique())
     c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{int(yearly_rng['count'].sum()):,}")
-    c3.metric("Preprints (all-time, unique)", f"{int(summary['n_unique'].sum()):,}")
-    # c4.metric("Preprints (all-time, + versions)", f"{int(summary['n_records'].sum()):,}") 
+    unique_all_time = int(pd.to_numeric(summary.get("n_unique", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+    c3.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
 
     st.markdown("---")
     st.write("**Top servers**")
 
-    # UPDATED: build ranking according to the chosen mode
+    # Build ranking according to selected mode
     if rank_mode == "Summary total (all-time)":
         if "n_records" in show.columns and show["n_records"].notna().any():
             ranking = (show[["server_name","n_records"]]
                        .dropna()
-                       .rename(columns={"n_records":"total"})
-                      )
+                       .rename(columns={"n_records":"total"}))
             rank_title_suffix = " (summary, all-time)"
         else:
-            # fallback: if summary lacks totals, use all-time totals from yearly file
-            ranking = (totals_from_yearly
-                       .rename(columns={"total_all_years":"total"})
-                      )
+            # fallback: all-time totals from yearly file
+            ranking = totals_from_yearly.rename(columns={"total_all_years":"total"})
             ranking = ranking[ranking["server_name"].isin(show["server_name"])]
             rank_title_suffix = " (yearly fallback, all-time)"
     else:
-        # Year-range mode: sum only within selected years
+        # Year-range mode: sum within selected years
         ranking = (yearly_rng.groupby("server_name", as_index=False)["count"]
                    .sum()
-                   .rename(columns={"count":"total"})
-                  )
+                   .rename(columns={"count":"total"}))
         ranking = ranking[ranking["server_name"].isin(show["server_name"])]
         rank_title_suffix = f" ({yr_from}–{yr_to})"
 
-    topN = st.slider("Show top N", 5, 50, 15, 5)
-    top_df = ranking.sort_values("total", ascending=False).head(topN)
+    # ✅ Remove servers with zero total
+    ranking = ranking[ranking["total"] > 0]
 
-    fig_bar = px.bar(
-        top_df, x="total", y="server_name", orientation="h",
-        labels={"total":"Total preprints","server_name":"Server"},
-        title=f"Top {topN} servers{rank_title_suffix}"
-    )
-    fig_bar.update_layout(yaxis={"categoryorder":"total ascending"}, height=600)
-    st.plotly_chart(fig_bar, use_container_width=True)
+    
+
+    # Adaptive Top N slider + graceful empty state
+    n_rows = int(len(ranking))
+    if n_rows == 0:
+        st.info("No servers match the current filters.")
+    else:
+        max_n = max(1, n_rows)
+        default_n = min(15, max_n)
+        topN = st.slider("Show top N", 1, max_n, default_n, 1)
+        top_df = ranking.sort_values("total", ascending=False).head(topN)
+
+        fig_bar = px.bar(
+            top_df, x="total", y="server_name", orientation="h",
+            labels={"total":"Total preprints","server_name":"Server"},
+            title=f"Top {topN} servers{rank_title_suffix}"
+        )
+        fig_bar.update_layout(
+            yaxis={"categoryorder":"total ascending"},
+            height=min(200 + 28*len(top_df), 900)
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
 
     st.markdown("**Overall yearly trend (filtered)**")
     yearly_total = yearly_rng.groupby("year", as_index=False)["count"].sum()
-    fig_line_total = px.line(yearly_total, x="year", y="count", markers=True,
-                             labels={"count":"Preprints","year":"Year"},
-                             title=f"All servers • {yr_from}–{yr_to}")
+    fig_line_total = px.line(
+        yearly_total, x="year", y="count", markers=True,
+        labels={"count":"Preprints","year":"Year"},
+        title=f"All servers • {yr_from}–{yr_to}"
+    )
     st.plotly_chart(fig_line_total, use_container_width=True)
 
 # Explorer
 with tab_explorer:
     st.subheader("Server Explorer")
+
+    # Server list + quick search
     servers = sorted(show["server_name"].unique().tolist())
+    if len(servers) == 0:
+        st.info("No servers available with the current filters. Adjust filters in the sidebar.")
+        st.stop()
+
+    # q = st.text_input("Search server", "")
+    # if q:
+    #     servers = [s for s in servers if q.lower() in s.lower()]
+
+    # if len(servers) == 0:
+    #     st.info("No servers match that search. Clear the search or adjust filters.")
+    #     st.stop()
+
     sel = st.selectbox("Choose a server", servers)
 
     left, right = st.columns([1,2], gap="large")
@@ -236,8 +263,8 @@ with tab_explorer:
                 st.metric("Unique (summary)", f"{int(row.iloc[0]['n_unique']):,}")
             if pd.notna(row.iloc[0].get("pct_published", np.nan)):
                 raw_pct = float(row.iloc[0]["pct_published"])
-                # If <=1 assume it's a fraction; else assume it's already a percent value
                 pct_display = raw_pct * 100 if raw_pct <= 1 else raw_pct
+                pct_display = max(0.0, pct_display)  # clamp minimum at 0%
                 st.metric("% Published (summary)", f"{pct_display:.2f}%")
             if pd.notna(row.iloc[0].get("count_2024", np.nan)) or pd.notna(row.iloc[0].get("count_2025", np.nan)):
                 c24 = row.iloc[0].get("count_2024", np.nan)
@@ -280,7 +307,6 @@ with tab_compare:
     else:
         st.info("Select at least two servers to compare.")
 
-
 # Data (export)
 with tab_data:
     sub1, sub2 = st.tabs(["🔎 Filtered (current view)", "📦 Full datasets"])
@@ -297,8 +323,7 @@ with tab_data:
         st.subheader("Original & cleaned datasets")
 
         # (A) Summary file — ORIGINAL columns (exactly as loaded)
-        st.markdown("### Summary (original columns, wide)")
-        # To avoid rendering huge tables by default, show first 200 rows with a toggle
+        st.markdown(f"### Summary (original columns, wide) · {len(summary_raw):,} rows")
         show_all_sum = st.checkbox("Show all rows (summary)", value=False)
         sum_view = summary_raw if show_all_sum else summary_raw.head(200)
         st.dataframe(sum_view, use_container_width=True, hide_index=True)
@@ -307,14 +332,14 @@ with tab_data:
         st.divider()
 
         # (B) Yearly file — ORIGINAL columns (wide, with one column per year)
-        st.markdown("### Yearly (original columns, wide)")
+        st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
         show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False)
         yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
         st.dataframe(yr_view, use_container_width=True, hide_index=True)
         download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
 
         # (C) Yearly file — CLEANED (long form: server_name, year, count)
-        st.markdown("### Yearly (cleaned, long)")
+        st.markdown(f"### Yearly (cleaned, long) · {len(yearly):,} rows")
         show_all_long = st.checkbox("Show all rows (yearly, long)", value=False)
         yearly_long_view = yearly if show_all_long else yearly.head(500)
         st.dataframe(yearly_long_view.sort_values(["server_name","year"]),
@@ -326,4 +351,3 @@ with tab_data:
             "• ‘Original’ tables reflect exactly what was bundled in `data/`. "
             "• ‘Cleaned long’ is the normalized format used for charts (one row per server-year)."
         )
-
