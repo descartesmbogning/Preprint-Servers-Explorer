@@ -174,49 +174,70 @@ with tab_overview:
     # Build ranking according to selected mode
     if rank_mode == "Summary total (all-time)":
         if "n_records" in show.columns and show["n_records"].notna().any():
-            ranking = (show[["server_name","n_records"]]
-                       .dropna()
-                       .rename(columns={"n_records":"total"}))
+            ranking = (
+                show[["server_name", "n_records"]]
+                .dropna()
+                .rename(columns={"n_records": "total"})
+            )
             rank_title_suffix = " (summary, all-time)"
         else:
             # fallback: all-time totals from yearly file
-            ranking = totals_from_yearly.rename(columns={"total_all_years":"total"})
+            ranking = totals_from_yearly.rename(columns={"total_all_years": "total"})
             ranking = ranking[ranking["server_name"].isin(show["server_name"])]
             rank_title_suffix = " (yearly fallback, all-time)"
     else:
         # Year-range mode: sum within selected years
-        ranking = (yearly_rng.groupby("server_name", as_index=False)["count"]
-                   .sum()
-                   .rename(columns={"count":"total"}))
+        ranking = (
+            yearly_rng.groupby("server_name", as_index=False)["count"]
+            .sum()
+            .rename(columns={"count": "total"})
+        )
         ranking = ranking[ranking["server_name"].isin(show["server_name"])]
+        # Remove servers that have zero in the selected year range
+        ranking = ranking[ranking["total"] > 0]
         rank_title_suffix = f" ({yr_from}–{yr_to})"
 
-    # ✅ Remove servers with zero total
-    ranking = ranking[ranking["total"] > 0]
-
-    
-
-    # Adaptive Top N slider + graceful empty state
-    n_rows = int(len(ranking))
-    if n_rows == 0:
-        st.info("No servers match the current filters.")
+    # ── Guard: nothing to show# ── Guard: nothing to show
+    n_rows = int(ranking.shape[0])
+    if n_rows < 1:
+        st.info("No servers to show for the current filters/year range.")
     else:
-        max_n = max(1, n_rows)
-        default_n = min(15, max_n)
-        topN = st.slider("Show top N", 1, max_n, default_n, 1)
+        # Safe slider bounds
+        if n_rows == 1:
+            topN = 1
+            st.caption("Only one server matches the current filters.")
+        else:
+            max_n = n_rows
+            default_n = min(15, max_n)
+            topN = st.slider(
+                "Show top N",
+                min_value=1,
+                max_value=max_n,
+                value=default_n,
+                step=1,
+                key="topn_ranking"
+            )
+
+        # Build chart from available rows
         top_df = ranking.sort_values("total", ascending=False).head(topN)
 
         fig_bar = px.bar(
-            top_df, x="total", y="server_name", orientation="h",
-            labels={"total":"Total preprints","server_name":"Server"},
-            title=f"Top {topN} servers{rank_title_suffix}"
+            top_df,
+            x="total",
+            y="server_name",
+            orientation="h",
+            labels={"total": "Total preprints", "server_name": "Server"},
+            title=f"Top {topN} servers{rank_title_suffix}",
         )
         fig_bar.update_layout(
-            yaxis={"categoryorder":"total ascending"},
-            height=min(200 + 28*len(top_df), 900)
+            yaxis={"categoryorder": "total ascending"},
+            height=min(200 + 28 * len(top_df), 900),
         )
         st.plotly_chart(fig_bar, use_container_width=True)
 
+
+    
+    # Overall yearly trend
     st.markdown("**Overall yearly trend (filtered)**")
     yearly_total = yearly_rng.groupby("year", as_index=False)["count"].sum()
     fig_line_total = px.line(
