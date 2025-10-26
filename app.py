@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+from urllib.parse import quote, unquote
 
 st.set_page_config(page_title="Preprint Servers — Explorer", page_icon="📄", layout="wide")
 
@@ -50,13 +51,20 @@ def clean_summary(df_raw: pd.DataFrame) -> pd.DataFrame:
     if "server_name" not in df.columns:
         raise ValueError("Summary file must include 'server_name'.")
 
-    num_cols = ["n_records","n_is_version_of","n_unique","n_published","pct_published","count_2024","count_2025"]
+    num_cols = ["n_records", "n_is_version_of", "n_unique", "n_published", "pct_published", "count_2024", "count_2025"]
     for c in num_cols:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors="coerce")
 
     if "collection_date" in df.columns:
         df["collection_date"] = pd.to_datetime(df["collection_date"], errors="coerce")
+
+    # Normalize % published: handle 0–1 and 0–100; clamp at 0+
+    if "pct_published" in df.columns:
+        frac_share = df["pct_published"].dropna().between(0, 1).mean()
+        if frac_share > 0.9:
+            df["pct_published"] = df["pct_published"] * 100
+        df["pct_published"] = df["pct_published"].clip(lower=0)
 
     if "n_records" in df.columns and "n_unique" in df.columns:
         df["uniq_ratio"] = (df["n_unique"] / df["n_records"]).replace([np.inf, -np.inf], np.nan)
@@ -83,17 +91,52 @@ def clean_yearly(df_raw: pd.DataFrame) -> pd.DataFrame:
     year_cols = [c for c in df.columns if str(c).isdigit() and len(str(c)) == 4]
     if not year_cols:
         year_cols = [c for c in df.columns if str(c).isdigit()]
-    long_df = df.melt(id_vars=["server_name"], value_vars=year_cols,
-                      var_name="year", value_name="count")
+    long_df = df.melt(id_vars=["server_name"], value_vars=year_cols, var_name="year", value_name="count")
     long_df["year"] = pd.to_numeric(long_df["year"], errors="coerce").astype("Int64")
     long_df["count"] = pd.to_numeric(long_df["count"], errors="coerce").fillna(0).astype(int)
     long_df = long_df.dropna(subset=["year"])
     return long_df
 
+@st.cache_data
+def yearly_totals(df: pd.DataFrame) -> pd.DataFrame:
+    return df.groupby("server_name", as_index=False)["count"].sum().rename(columns={"count": "total_all_years"})
+
 def download_csv(df: pd.DataFrame, label, fname):
     buff = io.StringIO()
     df.to_csv(buff, index=False)
     st.download_button(label, buff.getvalue(), file_name=fname, mime="text/csv")
+
+# URL helpers
+qp = st.query_params  # mutable mapping
+
+def _qp_bool(key: str, default: bool) -> bool:
+    v = qp.get(key)
+    if v is None:
+        return default
+    return str(v).lower() in ("1", "true", "yes", "y", "on")
+
+def _update_qp_if_changed(**kvs):
+    new_map = dict(qp)
+    changed = False
+    for k, v in kvs.items():
+        sval = "" if v is None else str(v)
+        if new_map.get(k, "") != sval:
+            new_map[k] = sval
+            changed = True
+    if changed:
+        try:
+            st.query_params.update(new_map)
+        except Exception:
+            pass
+
+def _encode_list(vals):
+    # Use "|" as a separator; encode individual items for safety
+    return "|".join(quote(str(v), safe="") for v in vals)
+
+def _decode_list(s):
+    if not s:
+        return []
+    return [unquote(x) for x in str(s).split("|") if x != ""]
 
 # ───────────────────────── data loading ─────────────────────────
 sum_path = _find_file("summary")
@@ -105,6 +148,15 @@ if not sum_path or not yr_path:
     st.stop()
 
 st.sidebar.success("Using bundled data in `data/`")
+
+# Quick reset
+if st.sidebar.button("↺ Reset filters"):
+    st.session_state.clear()
+    try:
+        st.query_params.clear()
+    except Exception:
+        pass
+    st.rerun()
 
 with st.sidebar.expander("Optional: override with uploads"):
     up_sum = st.file_uploader("Summary (CSV/XLSX)", type=["csv","xlsx"], key="sum_up")
@@ -120,126 +172,167 @@ except Exception as e:
     st.error(f"Error parsing files: {e}")
     st.stop()
 
-# Filters
-src_opts = ["All"] + (sorted([s for s in summary["source"].dropna().unique()]) if "source" in summary.columns else [])
-src_filter = st.sidebar.selectbox("Source", src_opts, index=0)
-min_count = st.sidebar.number_input("Min records (summary)", min_value=0, value=0, step=100)
+# ─────────────── filters (source, min_count, year range) ───────────────
+has_source = "source" in summary.columns
+src_opts = ["All"] + (sorted(summary["source"].dropna().unique()) if has_source else [])
 
-totals_from_yearly = (yearly.groupby("server_name", as_index=False)["count"]
-                      .sum().rename(columns={"count":"total_all_years"}))
+# read URL defaults
+qp_source   = qp.get("source", "")
+qp_min      = qp.get("min_count", "0")
+qp_yr_from  = qp.get("yr_from")
+qp_yr_to    = qp.get("yr_to")
+
+src_index = 0
+if has_source and qp_source and qp_source in src_opts:
+    src_index = src_opts.index(qp_source)
+
+src_filter = st.sidebar.selectbox("Source", src_opts, index=src_index)
+min_count_default = int(qp_min) if qp_min.isdigit() else 0
+min_count = st.sidebar.number_input("Min records (summary)", min_value=0, value=min_count_default, step=100)
+
+totals_from_yearly = yearly_totals(yearly)
 summary = summary.merge(totals_from_yearly, on="server_name", how="left")
 
 show = summary.copy()
-if src_filter != "All" and "source" in show.columns:
+if src_filter != "All" and has_source:
     show = show[show["source"] == src_filter]
 if min_count and "n_records" in show.columns:
     show = show[show["n_records"].fillna(0) >= min_count]
 
 yr_min = int(yearly["year"].min()) if len(yearly) else 2000
 yr_max = int(yearly["year"].max()) if len(yearly) else 2025
-yr_from, yr_to = st.sidebar.slider("Year range", yr_min, yr_max, (yr_min, yr_max), step=1)
+
+# yr_from_default = int(qp_yr_from) if (qp_yr_from and qp_yr_from.isdigit()) else yr_min
+# yr_to_default   = int(qp_yr_to)   if (qp_yr_to and qp_yr_to.isdigit())   else yr_max
+
+# Prefer 1990 as the default start, but clamp to dataset min if needed
+PREFERRED_START_YEAR = 1990
+
+if qp_yr_from and str(qp_yr_from).isdigit():
+    yr_from_default = int(qp_yr_from)
+else:
+    yr_from_default = max(yr_min, PREFERRED_START_YEAR)
+
+if qp_yr_to and str(qp_yr_to).isdigit():
+    yr_to_default = int(qp_yr_to)
+else:
+    yr_to_default = yr_max
+
+
+yr_from, yr_to = st.sidebar.slider("Year range", yr_min, yr_max, (max(yr_min, yr_from_default), min(yr_max, yr_to_default)), step=1)
 yearly_rng = yearly[(yearly["year"] >= yr_from) & (yearly["year"] <= yr_to)]
 yearly_rng = yearly_rng[yearly_rng["server_name"].isin(show["server_name"])]
 
-# Ranking mode toggle
+# Ranking mode toggle (URL-synced)
+rank_key_in = qp.get("rank_mode", "range")  # 'summary' or 'range'
+rank_index_default = 0 if rank_key_in == "summary" else 1
 rank_mode = st.sidebar.radio(
     "Top servers ranking based on",
     ["Summary total (all-time)", "Year range (from yearly file)"],
-    index=1  # default to dynamic ranking that follows the slider
+    index=rank_index_default
+)
+rank_key_out = "summary" if rank_mode.startswith("Summary") else "range"
+
+# Persist core filters to URL
+_update_qp_if_changed(
+    source=(src_filter if has_source and src_filter != "All" else ""),
+    min_count=min_count,
+    yr_from=yr_from,
+    yr_to=yr_to,
+    rank_mode=rank_key_out,
 )
 
-# Header + last update
+# ─────────────── section/tab routing via URL ───────────────
 st.title("📄 Preprint Servers — Explorer")
 if "collection_date" in summary.columns and summary["collection_date"].notna().any():
     last_dt = pd.to_datetime(summary["collection_date"], errors="coerce").max()
     if pd.notna(last_dt):
         st.caption(f"Last updated (collection_date): **{last_dt.date()}**")
 
-# Tabs
-tab_overview, tab_explorer, tab_compare, tab_data = st.tabs(
-    ["📊 Overview", "🔎 Server Explorer", "⚖️ Compare", "🗂️ Data"]
+section_map = {
+    "overview": "📊 Overview",
+    "explorer": "🔎 Server Explorer",
+    "compare":  "⚖️ Compare",
+    "data":     "🗂️ Data",
+}
+rev_section_map = {v: k for k, v in section_map.items()}
+
+section_default_key = qp.get("section", "overview")
+section_default_label = section_map.get(section_default_key, "📊 Overview")
+section_label = st.radio(
+    "Section",
+    options=list(section_map.values()),
+    index=list(section_map.values()).index(section_default_label),
+    horizontal=True,
 )
+section_key = rev_section_map[section_label]
+_update_qp_if_changed(section=section_key)
 
-# Overview
-with tab_overview:
-    c1, c2, c3 = st.columns(3)
-    # ── Metrics that reflect all active filters (source, min_count, and year range)
-    # Servers that have at least one preprint in the current year range
+# ───────────────────────── sections ─────────────────────────
+
+if section_key == "overview":
+    c1, c2, c3, c4 = st.columns(4)
     servers_in_range = yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].nunique()
-
-    # Total preprints in current range
     total_preprints_range = int(yearly_rng["count"].sum())
-
-    # All-time unique preprints (filtered by source/min_count only)
-    unique_all_time = int(
-        pd.to_numeric(show.get("n_unique", pd.Series(dtype=float)), errors="coerce")
-        .fillna(0)
-        .sum()
-    )
+    unique_all_time = int(pd.to_numeric(show.get("n_unique", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+    n_records_total = int(pd.to_numeric(show.get("n_records", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
 
     c1.metric("Servers (active in selected range)", servers_in_range)
     c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{total_preprints_range:,}")
     c3.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
-
+    c4.metric("Preprints (all-time, + versions)", f"{n_records_total:,}")
 
     st.markdown("---")
     st.write("**Top servers**")
 
     # Build ranking according to selected mode
-    if rank_mode == "Summary total (all-time)":
+    if rank_key_out == "summary":
         if "n_records" in show.columns and show["n_records"].notna().any():
-            ranking = (
-                show[["server_name", "n_records"]]
-                .dropna()
-                .rename(columns={"n_records": "total"})
-            )
+            ranking = show[["server_name", "n_records"]].dropna().rename(columns={"n_records": "total"})
             rank_title_suffix = " (summary, all-time)"
         else:
-            # fallback: all-time totals from yearly file
             ranking = totals_from_yearly.rename(columns={"total_all_years": "total"})
             ranking = ranking[ranking["server_name"].isin(show["server_name"])]
             rank_title_suffix = " (yearly fallback, all-time)"
+        # REMOVE zero-total servers in summary mode too
+        ranking = ranking[ranking["total"] > 0]
     else:
-        # Year-range mode: sum within selected years
         ranking = (
             yearly_rng.groupby("server_name", as_index=False)["count"]
             .sum()
             .rename(columns={"count": "total"})
         )
         ranking = ranking[ranking["server_name"].isin(show["server_name"])]
-        # Remove servers that have zero in the selected year range
         ranking = ranking[ranking["total"] > 0]
         rank_title_suffix = f" ({yr_from}–{yr_to})"
 
-    # ── Guard: nothing to show# ── Guard: nothing to show
     n_rows = int(ranking.shape[0])
-
     if n_rows < 1:
         st.info("No servers to show for the current filters or year range.")
+        topN = None
     else:
-        # Safe slider bounds
+        ranking_sorted = ranking.sort_values("total", ascending=False)
+
+        # URL-synced topN
+        qp_topN = qp.get("topN")
+        default_n = min(15, n_rows) if n_rows > 1 else 1
+        topN_default = int(qp_topN) if (qp_topN and qp_topN.isdigit()) else default_n
+        topN_default = max(1, min(n_rows, topN_default))
+
         if n_rows == 1:
             topN = 1
             st.caption("Only one server matches the current filters.")
         else:
-            max_n = n_rows
-            default_n = min(15, max_n)
-            # Streamlit requires min_value < max_value, so guard for equal case
-            if max_n == 1:
-                topN = 1
-                st.caption("Only one server available to display.")
-            else:
-                topN = st.slider(
-                    "Show top N",
-                    min_value=1,
-                    max_value=max_n,
-                    value=default_n,
-                    step=1,
-                    key="topn_ranking"
-                )
+            topN = st.slider(
+                "Show top N",
+                min_value=1,
+                max_value=n_rows,
+                value=topN_default,
+                step=1,
+                key="topn_ranking"
+            )
 
-        # Build chart safely even if topN was set manually
-        top_df = ranking.sort_values("total", ascending=False).head(topN)
+        top_df = ranking_sorted.head(topN)
 
         if len(top_df) == 0:
             st.info("No servers with counts greater than zero in this range.")
@@ -255,43 +348,164 @@ with tab_overview:
             fig_bar.update_layout(
                 yaxis={"categoryorder": "total ascending"},
                 height=min(200 + 28 * len(top_df), 900),
+                margin=dict(l=140, r=20, t=60, b=40),
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
+        # Persist topN
+        _update_qp_if_changed(topN=(topN if topN is not None else ""))
 
+    # Yearly trend — stacked area (URL synced: saN, saOther, saPct)
+    st.markdown("**Yearly trend — stacked area**")
 
-    
-    # Overall yearly trend
-    st.markdown("**Overall yearly trend (filtered)**")
-    yearly_total = yearly_rng.groupby("year", as_index=False)["count"].sum()
-    fig_line_total = px.line(
-        yearly_total, x="year", y="count", markers=True,
-        labels={"count":"Preprints","year":"Year"},
-        title=f"All servers • {yr_from}–{yr_to}"
-    )
-    st.plotly_chart(fig_line_total, use_container_width=True)
+    col_sa1, col_sa2, col_sa3 = st.columns([1.2, 1, 1])
+    with col_sa1:
+        n_rows_for_stack = int(ranking.shape[0]) if 'ranking' in locals() else 0
+        if n_rows_for_stack <= 1:
+            stackN = 1
+            if n_rows_for_stack == 0:
+                st.caption("No ranked servers — using top of year-range totals.")
+            else:
+                st.caption("Only one server available for stacked area.")
+        elif n_rows_for_stack == 2:
+            qp_saN = qp.get("saN")
+            saN_default = int(qp_saN) if (qp_saN and qp_saN.isdigit()) else 2
+            saN_default = max(1, min(2, saN_default))
+            stackN = st.slider(
+                "Top N for stacked area",
+                min_value=1,
+                max_value=2,
+                value=saN_default,
+                step=1,
+                key="stackN",
+                help="With only two servers available, you can show one or both."
+            )
+        else:
+            default_stack_n = min(10, n_rows_for_stack)
+            qp_saN = qp.get("saN")
+            saN_default = int(qp_saN) if (qp_saN and qp_saN.isdigit()) else default_stack_n
+            saN_default = max(2, min(n_rows_for_stack, saN_default))
+            stackN = st.slider(
+                "Top N for stacked area",
+                min_value=2,
+                max_value=n_rows_for_stack,
+                value=saN_default,
+                step=1,
+                key="stackN"
+            )
 
-# Explorer
-with tab_explorer:
+    with col_sa2:
+        show_other_default = _qp_bool("saOther", True)
+        show_other = st.checkbox("Show ‘Other’ band", value=show_other_default, key="stack_show_other")
+    with col_sa3:
+        percent_mode_default = _qp_bool("saPct", False)
+        percent_mode = st.checkbox("Show % of total", value=percent_mode_default, key="stack_percent")
+
+    # Build top list for stacked area (non-zero servers only)
+    if 'ranking' in locals() and n_rows_for_stack > 0:
+        top_names = (
+            ranking.sort_values("total", ascending=False)
+                   .head(stackN)["server_name"]
+                   .tolist()
+        )
+    else:
+        tmp = (yearly_rng.groupby("server_name", as_index=False)["count"].sum()
+               .sort_values("count", ascending=False))
+        top_names = tmp[tmp["count"] > 0].head(stackN)["server_name"].tolist()
+
+    df_top = yearly_rng[yearly_rng["server_name"].isin(top_names)].copy()
+
+    if show_other:
+        df_other = yearly_rng[~yearly_rng["server_name"].isin(top_names)]
+        if not df_other.empty:
+            df_other = df_other.groupby("year", as_index=False)["count"].sum()
+            df_other["server_name"] = "Other"
+            df_plot = pd.concat([df_top, df_other], ignore_index=True)
+        else:
+            df_plot = df_top
+    else:
+        df_plot = df_top
+
+    # ---- Drop zero rows AND years whose total == 0
+    if not df_plot.empty:
+        df_plot = df_plot[df_plot["count"] > 0]
+        if not df_plot.empty:
+            year_totals = df_plot.groupby("year")["count"].sum()
+            nonzero_years = year_totals[year_totals > 0].index
+            df_plot = df_plot[df_plot["year"].isin(nonzero_years)]
+
+    if df_plot.empty:
+        st.info("No data to display for the current filters/year range.")
+    else:
+        order_df = df_plot.groupby("server_name", as_index=False)["count"].sum().sort_values("count", ascending=False)
+        labels_order = [s for s in order_df["server_name"] if s != "Other"]
+        if "Other" in order_df["server_name"].values:
+            labels_order += ["Other"]
+        category_order = {"server_name": labels_order}
+
+        fig_stack = px.area(
+            df_plot.sort_values(["year", "server_name"]),
+            x="year",
+            y="count",
+            color="server_name",
+            category_orders=category_order,
+            groupnorm="fraction" if percent_mode else None,
+            labels={"count": "Preprints" if not percent_mode else "Share", "year": "Year", "server_name": "Server"},
+            title=f"Top {min(stackN, len(category_order['server_name']))} servers{f' + Other' if show_other else ''} • {yr_from}–{yr_to}"
+        )
+
+        others_exist = show_other and "Other" in df_plot["server_name"].unique()
+        num_layers = len([s for s in df_plot["server_name"].unique() if s != "Other"]) + (1 if others_exist else 0)
+
+        base_height = 320
+        per_layer = 28
+        max_height = 900
+        adaptive_height = min(base_height + per_layer * max(num_layers, 1), max_height)
+        if percent_mode:
+            adaptive_height = int(adaptive_height * 0.9)
+
+        legend_conf = {}
+        if num_layers >= 12:
+            legend_conf = {"legend_orientation": "h", "legend_y": -0.2}
+
+        fig_stack.update_layout(
+            legend_title_text="Server",
+            height=adaptive_height,
+            margin=dict(t=70, r=20, b=40, l=60),
+            **legend_conf
+        )
+
+        if percent_mode:
+            fig_stack.update_traces(hovertemplate="<b>%{fullData.name}</b><br>Year=%{x}<br>Share=%{y:.1%}<extra></extra>")
+        else:
+            fig_stack.update_traces(hovertemplate="<b>%{fullData.name}</b><br>Year=%{x}<br>Count=%{y:,}<extra></extra>")
+
+        st.plotly_chart(fig_stack, use_container_width=True)
+
+        with st.expander("Download stacked-area dataset"):
+            download_csv(df_plot.sort_values(["server_name", "year"]),
+                         "⬇️ Download (stacked data, CSV)", "stacked_area_data.csv")
+
+    _update_qp_if_changed(saN=stackN, saOther=(1 if show_other else 0), saPct=(1 if percent_mode else 0))
+
+elif section_key == "explorer":
     st.subheader("Server Explorer")
 
-    # Server list + quick search
     servers = sorted(show["server_name"].unique().tolist())
     if len(servers) == 0:
         st.info("No servers available with the current filters. Adjust filters in the sidebar.")
         st.stop()
 
-    # q = st.text_input("Search server", "")
-    # if q:
-    #     servers = [s for s in servers if q.lower() in s.lower()]
+    # URL-synced selected server
+    qp_server = qp.get("server", "")
+    sel_default = servers[0]
+    if qp_server and qp_server in servers:
+        sel_default = qp_server
 
-    # if len(servers) == 0:
-    #     st.info("No servers match that search. Clear the search or adjust filters.")
-    #     st.stop()
+    sel = st.selectbox("Choose a server", servers, index=servers.index(sel_default))
+    _update_qp_if_changed(server=sel)
 
-    sel = st.selectbox("Choose a server", servers)
-
-    left, right = st.columns([1,2], gap="large")
+    left, right = st.columns([1, 2], gap="large")
     with left:
         row = summary.loc[summary["server_name"] == sel].head(1)
         st.markdown(f"### **{sel}**")
@@ -307,10 +521,7 @@ with tab_explorer:
             if pd.notna(row.iloc[0].get("n_unique", np.nan)):
                 st.metric("Unique (summary)", f"{int(row.iloc[0]['n_unique']):,}")
             if pd.notna(row.iloc[0].get("pct_published", np.nan)):
-                raw_pct = float(row.iloc[0]["pct_published"])
-                pct_display = raw_pct * 100 if raw_pct <= 1 else raw_pct
-                pct_display = max(0.0, pct_display)  # clamp minimum at 0%
-                st.metric("% Published (summary)", f"{pct_display:.2f}%")
+                st.metric("% Published (summary)", f"{float(row.iloc[0]['pct_published']):.2f}%")
             if pd.notna(row.iloc[0].get("count_2024", np.nan)) or pd.notna(row.iloc[0].get("count_2025", np.nan)):
                 c24 = row.iloc[0].get("count_2024", np.nan)
                 c25 = row.iloc[0].get("count_2025", np.nan)
@@ -324,71 +535,124 @@ with tab_explorer:
     with right:
         st.caption("Yearly trend")
         sv = sv_all.sort_values("year")
-        fig = px.line(sv, x="year", y="count", markers=True,
-                      labels={"count":"Preprints","year":"Year"},
-                      title=f"{sel} • yearly preprints")
-        st.plotly_chart(fig, use_container_width=True)
+        # Use only non-zero years for plotting
+        sv_nz = sv[sv["count"] > 0]
+        if sv_nz.empty:
+            st.info("No yearly preprints for this server in the dataset.")
+        else:
+            fig = px.line(
+                sv_nz, x="year", y="count", markers=True,
+                labels={"count": "Preprints", "year": "Year"},
+                title=f"{sel} • yearly preprints"
+            )
+            st.plotly_chart(fig, use_container_width=True)
+
         st.caption("Data for this server (yearly)")
         st.dataframe(sv, use_container_width=True, hide_index=True)
 
-# Compare
-with tab_compare:
+elif section_key == "compare":
     st.subheader("Compare Servers")
-    default_pick = servers[:3] if len(servers) >= 3 else servers
-    pick = st.multiselect("Pick 2–10 servers", options=servers, default=default_pick)
-    if len(pick) >= 2:
-        cmp = yearly_rng[yearly_rng["server_name"].isin(pick)]
-        fig_cmp = px.line(cmp, x="year", y="count", color="server_name", markers=True,
-                          labels={"count":"Preprints","year":"Year","server_name":"Server"},
-                          title=f"Comparison • {yr_from}–{yr_to}")
-        st.plotly_chart(fig_cmp, use_container_width=True)
 
-        agg = (cmp.groupby("server_name", as_index=False)
-                  .agg(total_in_range=("count","sum"),
-                       mean_per_year=("count","mean")))
-        agg["mean_per_year"] = agg["mean_per_year"].round(1)
-        st.dataframe(agg.sort_values("total_in_range", ascending=False),
-                     use_container_width=True, hide_index=True)
+    servers_active = sorted(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].unique().tolist())
+
+    # URL-synced compare list + percent
+    qp_cmp = _decode_list(qp.get("cmp", ""))
+    # Keep only valid names
+    qp_cmp = [s for s in qp_cmp if s in servers_active]
+
+    # Choose defaults
+    if len(qp_cmp) >= 2:
+        default_pick = qp_cmp
+    else:
+        default_pick = servers_active[:3] if len(servers_active) >= 3 else servers_active
+
+    pick = st.multiselect("Pick 2–10 servers", options=servers_active, default=default_pick, max_selections=10)
+    _update_qp_if_changed(cmp=_encode_list(pick))
+
+    cmp_percent_default = _qp_bool("cmpPct", False)
+    cmp_percent = st.checkbox("Show % of total (stacked)", value=cmp_percent_default, key="cmp_percent")
+
+    if len(pick) >= 2:
+        cmp = yearly_rng[yearly_rng["server_name"].isin(pick)].copy()
+        # Drop zero rows and zero-total years
+        cmp = cmp[cmp["count"] > 0]
+        if not cmp.empty:
+            yr_tot = cmp.groupby("year")["count"].sum()
+            cmp = cmp[cmp["year"].isin(yr_tot[yr_tot > 0].index)]
+
+        if cmp.empty:
+            st.info("No non-zero data for the chosen servers in this range.")
+        else:
+            if cmp_percent:
+                fig_cmp = px.area(
+                    cmp, x="year", y="count", color="server_name",
+                    groupnorm="fraction",
+                    labels={"count": "Share", "year": "Year", "server_name": "Server"},
+                    title=f"Comparison (share) • {yr_from}–{yr_to}"
+                )
+            else:
+                fig_cmp = px.line(
+                    cmp, x="year", y="count", color="server_name", markers=True,
+                    labels={"count": "Preprints", "year": "Year", "server_name": "Server"},
+                    title=f"Comparison • {yr_from}–{yr_to}"
+                )
+            st.plotly_chart(fig_cmp, use_container_width=True)
+
+            agg = (cmp.groupby("server_name", as_index=False)
+                      .agg(total_in_range=("count", "sum"),
+                           mean_per_year=("count", "mean")))
+            agg["mean_per_year"] = agg["mean_per_year"].round(1)
+            st.dataframe(agg.sort_values("total_in_range", ascending=False),
+                         use_container_width=True, hide_index=True)
     else:
         st.info("Select at least two servers to compare.")
 
-# Data (export)
-with tab_data:
-    sub1, sub2 = st.tabs(["🔎 Filtered (current view)", "📦 Full datasets"])
+    _update_qp_if_changed(cmpPct=(1 if cmp_percent else 0))
 
-    # ── Filtered slice (uses current year range + optional picks)
-    with sub1:
+elif section_key == "data":
+    st.header("🗂️ Data")
+
+    # URL-synced sub-view
+    view_labels = {"filtered": "🔎 Filtered (current view)", "full": "📦 Full datasets"}
+    view_key_default = qp.get("view", "filtered")
+    if view_key_default not in view_labels:
+        view_key_default = "filtered"
+    label_list = [view_labels["filtered"], view_labels["full"]]
+    default_index = 0 if view_key_default == "filtered" else 1
+    sub = st.radio("View", options=label_list, index=default_index, horizontal=True)
+    sub_key = "filtered" if sub.startswith("🔎") else "full"
+    _update_qp_if_changed(section="data", view=sub_key)
+
+    if sub_key == "filtered":
         st.subheader("Filtered data (based on year range and server selection)")
-        export_df = yearly_rng if "pick" not in locals() or not pick else yearly_rng[yearly_rng["server_name"].isin(pick)]
-        st.dataframe(export_df.sort_values(["server_name","year"]), use_container_width=True, hide_index=True)
+        export_df = yearly_rng
+        st.dataframe(export_df.sort_values(["server_name", "year"]), use_container_width=True, hide_index=True)
         download_csv(export_df, "⬇️ Download filtered CSV", "preprints_filtered.csv")
 
-    # ── Full datasets (original & cleaned)
-    with sub2:
+    else:
         st.subheader("Original & cleaned datasets")
 
-        # (A) Summary file — ORIGINAL columns (exactly as loaded)
         st.markdown(f"### Summary (original columns, wide) · {len(summary_raw):,} rows")
-        show_all_sum = st.checkbox("Show all rows (summary)", value=False)
+        show_all_sum = st.checkbox("Show all rows (summary)", value=False, key="show_all_sum")
         sum_view = summary_raw if show_all_sum else summary_raw.head(200)
         st.dataframe(sum_view, use_container_width=True, hide_index=True)
         download_csv(summary_raw, "⬇️ Download summary (original, CSV)", "summary_original.csv")
 
         st.divider()
 
-        # (B) Yearly file — ORIGINAL columns (wide, with one column per year)
         st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
-        show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False)
+        show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False, key="show_all_yr")
         yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
         st.dataframe(yr_view, use_container_width=True, hide_index=True)
         download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
 
-        # (C) Yearly file — CLEANED (long form: server_name, year, count)
         st.markdown(f"### Yearly (cleaned, long) · {len(yearly):,} rows")
-        show_all_long = st.checkbox("Show all rows (yearly, long)", value=False)
+        show_all_long = st.checkbox("Show all rows (yearly, long)", value=False, key="show_all_long")
         yearly_long_view = yearly if show_all_long else yearly.head(500)
-        st.dataframe(yearly_long_view.sort_values(["server_name","year"]),
-                     use_container_width=True, hide_index=True)
+        st.dataframe(
+            yearly_long_view.sort_values(["server_name", "year"]),
+            use_container_width=True, hide_index=True
+        )
         download_csv(yearly, "⬇️ Download yearly (cleaned long, CSV)", "yearly_cleaned_long.csv")
 
         st.caption(
