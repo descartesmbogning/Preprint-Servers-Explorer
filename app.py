@@ -223,6 +223,42 @@ yr_from, yr_to = st.sidebar.slider("Year range", yr_min, yr_max, (max(yr_min, yr
 yearly_rng = yearly[(yearly["year"] >= yr_from) & (yearly["year"] <= yr_to)]
 yearly_rng = yearly_rng[yearly_rng["server_name"].isin(show["server_name"])]
 
+# ── Global, consistent color map for all charts
+# Collect all server names that can appear anywhere under current filters
+servers_all = sorted(show["server_name"].unique().tolist())
+
+# Build a long, unique palette (concatenating Plotly qualitative palettes)
+base_palette = (
+    px.colors.qualitative.Plotly
+    + px.colors.qualitative.D3
+    + px.colors.qualitative.Set3
+    + px.colors.qualitative.Dark24
+    + px.colors.qualitative.Alphabet
+    + px.colors.qualitative.Safe
+    + px.colors.qualitative.Vivid
+)
+
+# Deduplicate while preserving order
+seen, long_palette = set(), []
+for c in base_palette:
+    if c not in seen:
+        seen.add(c)
+        long_palette.append(c)
+
+# If there still aren’t enough colors, synthesize more (HSL wheel)
+if len(long_palette) < len(servers_all):
+    need = len(servers_all) - len(long_palette)
+    long_palette += [f"hsl({int(360*i/max(1,need))},70%,50%)" for i in range(need)]
+
+# Map each server to one color
+color_map = {name: long_palette[i] for i, name in enumerate(servers_all)}
+
+# Always reserve a fixed color for the aggregated "Other"
+color_map["Other"] = "#9e9e9e"  # neutral gray
+
+
+
+
 # Ranking mode toggle (URL-synced)
 rank_key_in = qp.get("rank_mode", "range")  # 'summary' or 'range'
 rank_index_default = 0 if rank_key_in == "summary" else 1
@@ -449,6 +485,7 @@ if section_key == "overview":
             y="count",
             color="server_name",
             category_orders=category_order,
+            color_discrete_map=color_map,  
             groupnorm="fraction" if percent_mode else None,
             labels={"count": "Preprints" if not percent_mode else "Share", "year": "Year", "server_name": "Server"},
             title=f"Top {min(stackN, len(category_order['server_name']))} servers{f' + Other' if show_other else ''} • {yr_from}–{yr_to}"
@@ -491,7 +528,7 @@ if section_key == "overview":
 elif section_key == "explorer":
     st.subheader("Server Explorer")
 
-    servers = sorted(show["server_name"].unique().tolist())
+    servers = sorted(show["server_name"].unique().tolist(), key=str.lower)
     if len(servers) == 0:
         st.info("No servers available with the current filters. Adjust filters in the sidebar.")
         st.stop()
@@ -542,6 +579,7 @@ elif section_key == "explorer":
         else:
             fig = px.line(
                 sv_nz, x="year", y="count", markers=True,
+                color_discrete_map=color_map, 
                 labels={"count": "Preprints", "year": "Year"},
                 title=f"{sel} • yearly preprints"
             )
@@ -553,7 +591,7 @@ elif section_key == "explorer":
 elif section_key == "compare":
     st.subheader("Compare Servers")
 
-    servers_active = sorted(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].unique().tolist())
+    servers_active = sorted(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].unique().tolist(), key=str.lower)
 
     # URL-synced compare list + percent
     qp_cmp = _decode_list(qp.get("cmp", ""))
@@ -586,6 +624,7 @@ elif section_key == "compare":
             if cmp_percent:
                 fig_cmp = px.area(
                     cmp, x="year", y="count", color="server_name",
+                    color_discrete_map=color_map, 
                     groupnorm="fraction",
                     labels={"count": "Share", "year": "Year", "server_name": "Server"},
                     title=f"Comparison (share) • {yr_from}–{yr_to}"
@@ -593,6 +632,7 @@ elif section_key == "compare":
             else:
                 fig_cmp = px.line(
                     cmp, x="year", y="count", color="server_name", markers=True,
+                    color_discrete_map=color_map, 
                     labels={"count": "Preprints", "year": "Year", "server_name": "Server"},
                     title=f"Comparison • {yr_from}–{yr_to}"
                 )
