@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.express as px
 from urllib.parse import quote, unquote
 
-st.set_page_config(page_title="Preprint Servers — Explorer", page_icon="📄", layout="wide")
+st.set_page_config(page_title="Preprints Tracker", page_icon="📄", layout="wide")
 
 DATA_DIR = "data"  # put your files here: data/summary.csv, data/yearly.csv
 
@@ -147,8 +147,6 @@ if not sum_path or not yr_path:
     st.sidebar.error("Missing bundled files. Add `data/summary.csv` (or .xlsx) and `data/yearly.csv` (or .xlsx).")
     st.stop()
 
-st.sidebar.success("Using bundled data in `data/`")
-
 # Quick reset
 if st.sidebar.button("↺ Reset filters"):
     st.session_state.clear()
@@ -202,9 +200,6 @@ if min_count and "n_records" in show.columns:
 yr_min = int(yearly["year"].min()) if len(yearly) else 2000
 yr_max = int(yearly["year"].max()) if len(yearly) else 2025
 
-# yr_from_default = int(qp_yr_from) if (qp_yr_from and qp_yr_from.isdigit()) else yr_min
-# yr_to_default   = int(qp_yr_to)   if (qp_yr_to and qp_yr_to.isdigit())   else yr_max
-
 # Prefer 1990 as the default start, but clamp to dataset min if needed
 PREFERRED_START_YEAR = 1990
 
@@ -218,16 +213,18 @@ if qp_yr_to and str(qp_yr_to).isdigit():
 else:
     yr_to_default = yr_max
 
-
-yr_from, yr_to = st.sidebar.slider("Year range", yr_min, yr_max, (max(yr_min, yr_from_default), min(yr_max, yr_to_default)), step=1)
+yr_from, yr_to = st.sidebar.slider(
+    "Year range",
+    yr_min,
+    yr_max,
+    (max(yr_min, yr_from_default), min(yr_max, yr_to_default)),
+    step=1
+)
 yearly_rng = yearly[(yearly["year"] >= yr_from) & (yearly["year"] <= yr_to)]
 yearly_rng = yearly_rng[yearly_rng["server_name"].isin(show["server_name"])]
 
 # ── Global, consistent color map for all charts
-# Collect all server names that can appear anywhere under current filters
 servers_all = sorted(show["server_name"].unique().tolist())
-
-# Build a long, unique palette (concatenating Plotly qualitative palettes)
 base_palette = (
     px.colors.qualitative.Plotly
     + px.colors.qualitative.D3
@@ -238,32 +235,51 @@ base_palette = (
     + px.colors.qualitative.Vivid
 )
 
-# Deduplicate while preserving order
 seen, long_palette = set(), []
 for c in base_palette:
     if c not in seen:
         seen.add(c)
         long_palette.append(c)
 
-# If there still aren’t enough colors, synthesize more (HSL wheel)
 if len(long_palette) < len(servers_all):
     need = len(servers_all) - len(long_palette)
     long_palette += [f"hsl({int(360*i/max(1,need))},70%,50%)" for i in range(need)]
 
-# Map each server to one color
 color_map = {name: long_palette[i] for i, name in enumerate(servers_all)}
+color_map["Other"] = "#9e9e9e"  # fixed gray for aggregate
 
-# Always reserve a fixed color for the aggregated "Other"
-color_map["Other"] = "#9e9e9e"  # neutral gray
+# ── Suggestion order helper ────────────────────────────────
+def _sorted_servers_for_suggestions(show_df: pd.DataFrame, yearly_rng_df: pd.DataFrame, mode: str, restrict_names=None):
+    """
+    mode in {"alpha","count"}.
+    Returns a list of server names sorted per mode.
+      - 'alpha'  → A..Z by name
+      - 'count'  → Descending by total count in the current year range, ties A..Z
+                   (servers absent from yearly_rng_df get 0).
+    If restrict_names is provided (set or list), only names in it are considered.
+    """
+    names = show_df["server_name"].dropna().astype(str).unique().tolist()
+    if restrict_names is not None:
+        rset = set(restrict_names)
+        names = [n for n in names if n in rset]
 
+    if mode == "count":
+        tot = (yearly_rng_df.groupby("server_name", as_index=False)["count"]
+               .sum()
+               .rename(columns={"count": "total"}))
+        tmp = pd.DataFrame({"server_name": names})
+        tmp = tmp.merge(tot, on="server_name", how="left")
+        tmp["total"] = tmp["total"].fillna(0).astype(int)
+        tmp = tmp.sort_values(["total", "server_name"], ascending=[False, True])
+        return tmp["server_name"].tolist()
 
+    return sorted(names, key=str.lower)
 
-
-# Ranking mode toggle (URL-synced)
+# ─────────────── ranking mode toggle (URL-synced) ──────────
 rank_key_in = qp.get("rank_mode", "range")  # 'summary' or 'range'
 rank_index_default = 0 if rank_key_in == "summary" else 1
 rank_mode = st.sidebar.radio(
-    "Top servers ranking based on",
+    "Top sources ranking based on",
     ["Summary total (all-time)", "Year range (from yearly file)"],
     index=rank_index_default
 )
@@ -279,7 +295,7 @@ _update_qp_if_changed(
 )
 
 # ─────────────── section/tab routing via URL ───────────────
-st.title("📄 Preprint Servers — Explorer")
+st.title("📄 Preprint Tracker")
 if "collection_date" in summary.columns and summary["collection_date"].notna().any():
     last_dt = pd.to_datetime(summary["collection_date"], errors="coerce").max()
     if pd.notna(last_dt):
@@ -287,7 +303,7 @@ if "collection_date" in summary.columns and summary["collection_date"].notna().a
 
 section_map = {
     "overview": "📊 Overview",
-    "explorer": "🔎 Server Explorer",
+    "explorer": "🔎 Source Explorer",
     "compare":  "⚖️ Compare",
     "data":     "🗂️ Data",
 }
@@ -307,19 +323,17 @@ _update_qp_if_changed(section=section_key)
 # ───────────────────────── sections ─────────────────────────
 
 if section_key == "overview":
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3 = st.columns(3)
     servers_in_range = yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].nunique()
     total_preprints_range = int(yearly_rng["count"].sum())
     unique_all_time = int(pd.to_numeric(show.get("n_unique", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
-    n_records_total = int(pd.to_numeric(show.get("n_records", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
 
-    c1.metric("Servers (active in selected range)", servers_in_range)
+    c1.metric("Sources (active in selected range)", servers_in_range)
     c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{total_preprints_range:,}")
     c3.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
-    c4.metric("Preprints (all-time, + versions)", f"{n_records_total:,}")
 
     st.markdown("---")
-    st.write("**Top servers**")
+    st.write("**Top sources**")
 
     # Build ranking according to selected mode
     if rank_key_out == "summary":
@@ -330,7 +344,6 @@ if section_key == "overview":
             ranking = totals_from_yearly.rename(columns={"total_all_years": "total"})
             ranking = ranking[ranking["server_name"].isin(show["server_name"])]
             rank_title_suffix = " (yearly fallback, all-time)"
-        # REMOVE zero-total servers in summary mode too
         ranking = ranking[ranking["total"] > 0]
     else:
         ranking = (
@@ -344,12 +357,10 @@ if section_key == "overview":
 
     n_rows = int(ranking.shape[0])
     if n_rows < 1:
-        st.info("No servers to show for the current filters or year range.")
+        st.info("No sources to show for the current filters or year range.")
         topN = None
     else:
         ranking_sorted = ranking.sort_values("total", ascending=False)
-
-        # URL-synced topN
         qp_topN = qp.get("topN")
         default_n = min(15, n_rows) if n_rows > 1 else 1
         topN_default = int(qp_topN) if (qp_topN and qp_topN.isdigit()) else default_n
@@ -371,7 +382,7 @@ if section_key == "overview":
         top_df = ranking_sorted.head(topN)
 
         if len(top_df) == 0:
-            st.info("No servers with counts greater than zero in this range.")
+            st.info("No sources with counts greater than zero in this range.")
         else:
             fig_bar = px.bar(
                 top_df,
@@ -379,28 +390,30 @@ if section_key == "overview":
                 y="server_name",
                 orientation="h",
                 labels={"total": "Total preprints", "server_name": "Server"},
-                title=f"Top {topN} servers{rank_title_suffix}",
+                title=f"Top {topN} sources{rank_title_suffix}",
+                # color="server_name",
+                color_discrete_map=color_map,
+                category_orders={"server_name": top_df.sort_values("total", ascending=True)["server_name"].tolist()},
             )
             fig_bar.update_layout(
+                showlegend=False,
                 yaxis={"categoryorder": "total ascending"},
                 height=min(200 + 28 * len(top_df), 900),
                 margin=dict(l=140, r=20, t=60, b=40),
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
-        # Persist topN
         _update_qp_if_changed(topN=(topN if topN is not None else ""))
 
-    # Yearly trend — stacked area (URL synced: saN, saOther, saPct)
+    # Yearly trend — stacked area
     st.markdown("**Yearly trend — stacked area**")
-
     col_sa1, col_sa2, col_sa3 = st.columns([1.2, 1, 1])
     with col_sa1:
         n_rows_for_stack = int(ranking.shape[0]) if 'ranking' in locals() else 0
         if n_rows_for_stack <= 1:
             stackN = 1
             if n_rows_for_stack == 0:
-                st.caption("No ranked servers — using top of year-range totals.")
+                st.caption("No ranked sources — using top of year-range totals.")
             else:
                 st.caption("Only one server available for stacked area.")
         elif n_rows_for_stack == 2:
@@ -414,7 +427,7 @@ if section_key == "overview":
                 value=saN_default,
                 step=1,
                 key="stackN",
-                help="With only two servers available, you can show one or both."
+                help="With only two sources available, you can show one or both."
             )
         else:
             default_stack_n = min(10, n_rows_for_stack)
@@ -429,7 +442,6 @@ if section_key == "overview":
                 step=1,
                 key="stackN"
             )
-
     with col_sa2:
         show_other_default = _qp_bool("saOther", True)
         show_other = st.checkbox("Show ‘Other’ band", value=show_other_default, key="stack_show_other")
@@ -437,7 +449,6 @@ if section_key == "overview":
         percent_mode_default = _qp_bool("saPct", False)
         percent_mode = st.checkbox("Show % of total", value=percent_mode_default, key="stack_percent")
 
-    # Build top list for stacked area (non-zero servers only)
     if 'ranking' in locals() and n_rows_for_stack > 0:
         top_names = (
             ranking.sort_values("total", ascending=False)
@@ -462,7 +473,6 @@ if section_key == "overview":
     else:
         df_plot = df_top
 
-    # ---- Drop zero rows AND years whose total == 0
     if not df_plot.empty:
         df_plot = df_plot[df_plot["count"] > 0]
         if not df_plot.empty:
@@ -485,10 +495,10 @@ if section_key == "overview":
             y="count",
             color="server_name",
             category_orders=category_order,
-            color_discrete_map=color_map,  
+            color_discrete_map=color_map,
             groupnorm="fraction" if percent_mode else None,
             labels={"count": "Preprints" if not percent_mode else "Share", "year": "Year", "server_name": "Server"},
-            title=f"Top {min(stackN, len(category_order['server_name']))} servers{f' + Other' if show_other else ''} • {yr_from}–{yr_to}"
+            title=f"Top {min(stackN, len(category_order['server_name']))} sources{f' + Other' if show_other else ''} • {yr_from}–{yr_to}"
         )
 
         others_exist = show_other and "Other" in df_plot["server_name"].unique()
@@ -526,11 +536,26 @@ if section_key == "overview":
     _update_qp_if_changed(saN=stackN, saOther=(1 if show_other else 0), saPct=(1 if percent_mode else 0))
 
 elif section_key == "explorer":
-    st.subheader("Server Explorer")
+    st.subheader("Source Explorer")
 
-    servers = sorted(show["server_name"].unique().tolist(), key=str.lower)
+    # --- Suggestions order (local to Explorer) ---
+    suggest_modes = {"By total in selected range": "count", "Alphabetical (A–Z)": "alpha"}
+    qp_suggest = qp.get("suggest", "count")  # default = count
+    expl_suggest_label = st.radio(
+        "Suggestions order",
+        list(suggest_modes.keys()),
+        index=0 if qp_suggest not in ("alpha",) else 1,
+        horizontal=True,
+        help="Controls how the list below is sorted.",
+        key="explorer_suggest_radio",
+    )
+    expl_suggest_mode = suggest_modes[expl_suggest_label]
+    _update_qp_if_changed(suggest=expl_suggest_mode)
+
+    # --- Use suggestion order for servers ---
+    servers = _sorted_servers_for_suggestions(show, yearly_rng, expl_suggest_mode)
     if len(servers) == 0:
-        st.info("No servers available with the current filters. Adjust filters in the sidebar.")
+        st.info("No sources available with the current filters. Adjust filters in the sidebar.")
         st.stop()
 
     # URL-synced selected server
@@ -539,72 +564,122 @@ elif section_key == "explorer":
     if qp_server and qp_server in servers:
         sel_default = qp_server
 
-    sel = st.selectbox("Choose a server", servers, index=servers.index(sel_default))
+    sel = st.selectbox("Choose a source", servers, index=servers.index(sel_default))
     _update_qp_if_changed(server=sel)
 
     left, right = st.columns([1, 2], gap="large")
+
     with left:
         row = summary.loc[summary["server_name"] == sel].head(1)
         st.markdown(f"### **{sel}**")
 
         sv_all = yearly[yearly["server_name"] == sel]
         sv_rng = yearly_rng[yearly_rng["server_name"] == sel]
+
+        # Impactful key metrics
         st.metric(f"Preprints ({yr_from}–{yr_to})", f"{int(sv_rng['count'].sum()):,}")
-        st.metric("Preprints (all-time, yearly)", f"{int(sv_all['count'].sum()):,}")
 
         if not row.empty:
+            # Extra context metrics if available
             if pd.notna(row.iloc[0].get("n_records", np.nan)):
                 st.metric("Records (summary)", f"{int(row.iloc[0]['n_records']):,}")
             if pd.notna(row.iloc[0].get("n_unique", np.nan)):
                 st.metric("Unique (summary)", f"{int(row.iloc[0]['n_unique']):,}")
-            if pd.notna(row.iloc[0].get("pct_published", np.nan)):
-                st.metric("% Published (summary)", f"{float(row.iloc[0]['pct_published']):.2f}%")
+            n_pub = row.iloc[0].get("n_published", np.nan)
+            pct = row.iloc[0].get("pct_published", np.nan)
+            if pd.notna(n_pub) and pd.notna(pct):
+                # Show both count and percent in one metric
+                st.metric("Published (summary)", f"{int(n_pub):,} ({float(pct):.2f}%)")
+            elif pd.notna(n_pub):
+                st.metric("Published (summary)", f"{int(n_pub):,}")
+            elif pd.notna(pct):
+                st.metric("% Published (summary)", f"{float(pct):.2f}%")
+            if 'n_is_version_of' in row.columns and pd.notna(row.iloc[0].get('n_is_version_of')):
+                st.metric("Version(s)", f"{int(row.iloc[0]['n_is_version_of']):,}")
             if pd.notna(row.iloc[0].get("count_2024", np.nan)) or pd.notna(row.iloc[0].get("count_2025", np.nan)):
                 c24 = row.iloc[0].get("count_2024", np.nan)
                 c25 = row.iloc[0].get("count_2025", np.nan)
                 if pd.notna(c24): st.caption(f"Count 2024 (summary): **{int(c24):,}**")
                 if pd.notna(c25): st.caption(f"Count 2025 (summary): **{int(c25):,}**")
 
-        if not row.empty:
-            st.caption("Summary row")
-            st.dataframe(row.reset_index(drop=True), use_container_width=True)
+    # Bigger, cleaner Summary row
+    st.markdown("### Summary row")
+    st.dataframe(
+        row.reset_index(drop=True),
+        use_container_width=False,
+        hide_index=True,
+        # height=260,  # larger, impactful view
+    )
 
     with right:
-        st.caption("Yearly trend")
-        sv = sv_all.sort_values("year")
-        # Use only non-zero years for plotting
-        sv_nz = sv[sv["count"] > 0]
+        # Header + Download button on same row (clean + actionable)
+        hdr_col, dl_col = st.columns([4, 1], gap="small")
+        with hdr_col:
+            st.caption("Yearly trend")
+
+        sv_all = yearly[yearly["server_name"] == sel].sort_values("year")
+        sv_nz = sv_all[sv_all["count"] > 0]
+
+        # Prepare safe filename once
+        safe_name = "".join(ch if ch.isalnum() or ch in ("-", "_") else "_" for ch in sel)[:80]
+        with dl_col:
+            st.download_button(
+                "⬇️ CSV",
+                sv_all.to_csv(index=False),
+                file_name=f"{safe_name}_yearly.csv",
+                mime="text/csv",
+                use_container_width=True,
+                help="Download this server’s yearly data",
+            )
+
         if sv_nz.empty:
             st.info("No yearly preprints for this server in the dataset.")
         else:
             fig = px.line(
-                sv_nz, x="year", y="count", markers=True,
-                color_discrete_map=color_map, 
+                sv_nz,
+                x="year",
+                y="count",
+                markers=True,
+                color="server_name",
+                color_discrete_map=color_map,
                 labels={"count": "Preprints", "year": "Year"},
-                title=f"{sel} • yearly preprints"
+                title=f"{sel} • yearly preprints",
             )
+            fig.update_layout(showlegend=False, margin=dict(t=60, r=20, b=40, l=60))
             st.plotly_chart(fig, use_container_width=True)
 
-        st.caption("Data for this server (yearly)")
-        st.dataframe(sv, use_container_width=True, hide_index=True)
+
+
 
 elif section_key == "compare":
-    st.subheader("Compare Servers")
+    st.subheader("Compare Sources")
 
-    servers_active = sorted(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].unique().tolist(), key=str.lower)
+    # Local Suggestions order (Compare) — default to "count"
+    suggest_modes = {"By total in selected range": "count", "Alphabetical (A–Z)": "alpha"}
+    qp_suggest = qp.get("suggest", "count")
+    comp_suggest_label = st.radio(
+        "Suggestions order",
+        list(suggest_modes.keys()),
+        index=0 if qp_suggest != "alpha" else 1,
+        horizontal=True,
+        help="Controls the suggestions list for the picker below.",
+        key="compare_suggest_radio",
+    )
+    comp_suggest_mode = suggest_modes[comp_suggest_label]
+    _update_qp_if_changed(suggest=comp_suggest_mode)
 
-    # URL-synced compare list + percent
+    active_names = set(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].unique().tolist())
+    servers_active = _sorted_servers_for_suggestions(show, yearly_rng, comp_suggest_mode, restrict_names=active_names)
+
     qp_cmp = _decode_list(qp.get("cmp", ""))
-    # Keep only valid names
     qp_cmp = [s for s in qp_cmp if s in servers_active]
 
-    # Choose defaults
     if len(qp_cmp) >= 2:
         default_pick = qp_cmp
     else:
         default_pick = servers_active[:3] if len(servers_active) >= 3 else servers_active
 
-    pick = st.multiselect("Pick 2–10 servers", options=servers_active, default=default_pick, max_selections=10)
+    pick = st.multiselect("Pick 2–10 sources", options=servers_active, default=default_pick, max_selections=10)
     _update_qp_if_changed(cmp=_encode_list(pick))
 
     cmp_percent_default = _qp_bool("cmpPct", False)
@@ -612,19 +687,18 @@ elif section_key == "compare":
 
     if len(pick) >= 2:
         cmp = yearly_rng[yearly_rng["server_name"].isin(pick)].copy()
-        # Drop zero rows and zero-total years
         cmp = cmp[cmp["count"] > 0]
         if not cmp.empty:
             yr_tot = cmp.groupby("year")["count"].sum()
             cmp = cmp[cmp["year"].isin(yr_tot[yr_tot > 0].index)]
 
         if cmp.empty:
-            st.info("No non-zero data for the chosen servers in this range.")
+            st.info("No non-zero data for the chosen sources in this range.")
         else:
             if cmp_percent:
                 fig_cmp = px.area(
                     cmp, x="year", y="count", color="server_name",
-                    color_discrete_map=color_map, 
+                    color_discrete_map=color_map,
                     groupnorm="fraction",
                     labels={"count": "Share", "year": "Year", "server_name": "Server"},
                     title=f"Comparison (share) • {yr_from}–{yr_to}"
@@ -632,7 +706,7 @@ elif section_key == "compare":
             else:
                 fig_cmp = px.line(
                     cmp, x="year", y="count", color="server_name", markers=True,
-                    color_discrete_map=color_map, 
+                    color_discrete_map=color_map,
                     labels={"count": "Preprints", "year": "Year", "server_name": "Server"},
                     title=f"Comparison • {yr_from}–{yr_to}"
                 )
@@ -645,58 +719,37 @@ elif section_key == "compare":
             st.dataframe(agg.sort_values("total_in_range", ascending=False),
                          use_container_width=True, hide_index=True)
     else:
-        st.info("Select at least two servers to compare.")
+        st.info("Select at least two sources to compare.")
 
     _update_qp_if_changed(cmpPct=(1 if cmp_percent else 0))
 
 elif section_key == "data":
     st.header("🗂️ Data")
 
-    # URL-synced sub-view
-    view_labels = {"filtered": "🔎 Filtered (current view)", "full": "📦 Full datasets"}
-    view_key_default = qp.get("view", "filtered")
-    if view_key_default not in view_labels:
-        view_key_default = "filtered"
-    label_list = [view_labels["filtered"], view_labels["full"]]
-    default_index = 0 if view_key_default == "filtered" else 1
-    sub = st.radio("View", options=label_list, index=default_index, horizontal=True)
-    sub_key = "filtered" if sub.startswith("🔎") else "full"
-    _update_qp_if_changed(section="data", view=sub_key)
+    # Only FULL datasets view (Filtered view removed)
+    st.subheader("Original & cleaned datasets")
 
-    if sub_key == "filtered":
-        st.subheader("Filtered data (based on year range and server selection)")
-        export_df = yearly_rng
-        st.dataframe(export_df.sort_values(["server_name", "year"]), use_container_width=True, hide_index=True)
-        download_csv(export_df, "⬇️ Download filtered CSV", "preprints_filtered.csv")
+    st.markdown(f"### Summary (original columns, wide) · {len(summary_raw):,} rows")
+    show_all_sum = st.checkbox("Show all rows (summary)", value=False, key="show_all_sum")
+    sum_view = summary_raw if show_all_sum else summary_raw.head(200)
+    st.dataframe(sum_view, use_container_width=True, hide_index=True)
+    download_csv(summary_raw, "⬇️ Download summary (original, CSV)", "summary_original.csv")
 
-    else:
-        st.subheader("Original & cleaned datasets")
+    st.divider()
 
-        st.markdown(f"### Summary (original columns, wide) · {len(summary_raw):,} rows")
-        show_all_sum = st.checkbox("Show all rows (summary)", value=False, key="show_all_sum")
-        sum_view = summary_raw if show_all_sum else summary_raw.head(200)
-        st.dataframe(sum_view, use_container_width=True, hide_index=True)
-        download_csv(summary_raw, "⬇️ Download summary (original, CSV)", "summary_original.csv")
+    st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
+    show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False, key="show_all_yr")
+    yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
+    st.dataframe(yr_view, use_container_width=True, hide_index=True)
+    download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
 
-        st.divider()
+    st.markdown(f"### Yearly (cleaned, long) · {len(yearly):,} rows")
+    show_all_long = st.checkbox("Show all rows (yearly, long)", value=False, key="show_all_long")
+    yearly_long_view = yearly if show_all_long else yearly.head(500)
+    st.dataframe(
+        yearly_long_view.sort_values(["server_name", "year"]),
+        use_container_width=True, hide_index=True
+    )
+    download_csv(yearly, "⬇️ Download yearly (cleaned long, CSV)", "yearly_cleaned_long.csv")
 
-        st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
-        show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False, key="show_all_yr")
-        yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
-        st.dataframe(yr_view, use_container_width=True, hide_index=True)
-        download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
-
-        st.markdown(f"### Yearly (cleaned, long) · {len(yearly):,} rows")
-        show_all_long = st.checkbox("Show all rows (yearly, long)", value=False, key="show_all_long")
-        yearly_long_view = yearly if show_all_long else yearly.head(500)
-        st.dataframe(
-            yearly_long_view.sort_values(["server_name", "year"]),
-            use_container_width=True, hide_index=True
-        )
-        download_csv(yearly, "⬇️ Download yearly (cleaned long, CSV)", "yearly_cleaned_long.csv")
-
-        st.caption(
-            "Notes: "
-            "• ‘Original’ tables reflect exactly what was bundled in `data/`. "
-            "• ‘Cleaned long’ is the normalized format used for charts (one row per server-year)."
-        )
+    
