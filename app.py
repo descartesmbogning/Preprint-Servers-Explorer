@@ -19,6 +19,22 @@ def _find_file(basename_no_ext: str):
     if os.path.exists(xlsx_path): return xlsx_path
     return None
 
+def _fmt_count_pct(n, denom):
+    """Return 'n (p%)' if denom>0 else just 'n'."""
+    try:
+        n = int(n)
+    except Exception:
+        return "—"
+    if denom and denom > 0:
+        return f"{n:,} ({n/denom:.1%})"
+    return f"{n:,}"
+
+def _int_or_zero(x):
+    try:
+        return int(x)
+    except Exception:
+        return 0
+
 @st.cache_data
 def read_any(path_or_buffer):
     if isinstance(path_or_buffer, str):
@@ -295,7 +311,7 @@ _update_qp_if_changed(
 )
 
 # ─────────────── section/tab routing via URL ───────────────
-st.title("📄 Preprint Tracker")
+st.title("📄 Preprints Tracker")
 if "collection_date" in summary.columns and summary["collection_date"].notna().any():
     last_dt = pd.to_datetime(summary["collection_date"], errors="coerce").max()
     if pd.notna(last_dt):
@@ -306,6 +322,7 @@ section_map = {
     "explorer": "🔎 Source Explorer",
     "compare":  "⚖️ Compare",
     "data":     "🗂️ Data",
+    "about":    "ℹ️ About", 
 }
 rev_section_map = {v: k for k, v in section_map.items()}
 
@@ -323,14 +340,38 @@ _update_qp_if_changed(section=section_key)
 # ───────────────────────── sections ─────────────────────────
 
 if section_key == "overview":
-    c1, c2, c3 = st.columns(3)
+    # ---------- first row (requested 4 stats) ----------
+    c1, c2, c3, c4 = st.columns(4)
     servers_in_range = yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].nunique()
     total_preprints_range = int(yearly_rng["count"].sum())
     unique_all_time = int(pd.to_numeric(show.get("n_unique", pd.Series(dtype=float)), errors="coerce").fillna(0).sum())
+    servers_all_time = show["server_name"].nunique()
 
     c1.metric("Sources (active in selected range)", servers_in_range)
-    c2.metric(f"Preprints in range {yr_from}–{yr_to}", f"{total_preprints_range:,}")
-    c3.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
+    c2.metric("Preprints (active in selected range)", f"{total_preprints_range:,}")
+    c3.metric("Sources (all-time)", servers_all_time)
+    c4.metric("Preprints (all-time, unique)", f"{unique_all_time:,}")
+
+    # ---------- second row (4 stats with % or N/A) ----------
+    total_versions_all_time = _int_or_zero(show.get("n_is_version_of", pd.Series([])).sum())
+    total_published_all_time = _int_or_zero(show.get("n_published", pd.Series([])).sum())
+
+    base_all_time = unique_all_time if unique_all_time > 0 else None
+
+    st.markdown("")
+    d1, d2, d3, d4 = st.columns(4)
+
+    d1.metric("Preprints with >1 Version (active in selected range)", "N/A")
+    d1.caption("Not available from yearly totals (no version flags by year).")
+
+    d2.metric("Preprints with >1 Version (all-time, unique)",
+              _fmt_count_pct(total_versions_all_time, base_all_time))
+
+    d3.metric("Preprints linked to Publications (active in selected range)", "N/A")
+    d3.caption("Not available from yearly totals (no publication-link flags by year).")
+
+    d4.metric("Preprints linked to Publications (all-time, unique)",
+              _fmt_count_pct(total_published_all_time, base_all_time))
 
     st.markdown("---")
     st.write("**Top sources**")
@@ -391,7 +432,6 @@ if section_key == "overview":
                 orientation="h",
                 labels={"total": "Total preprints", "server_name": "Server"},
                 title=f"Top {topN} sources{rank_title_suffix}",
-                # color="server_name",
                 color_discrete_map=color_map,
                 category_orders={"server_name": top_df.sort_values("total", ascending=True)["server_name"].tolist()},
             )
@@ -576,31 +616,37 @@ elif section_key == "explorer":
         sv_all = yearly[yearly["server_name"] == sel]
         sv_rng = yearly_rng[yearly_rng["server_name"] == sel]
 
-        # Impactful key metrics
-        st.metric(f"Preprints ({yr_from}–{yr_to})", f"{int(sv_rng['count'].sum()):,}")
+        # Bases for % (all-time unique, and in-range total)
+        base_all_time = _int_or_zero(row.get("n_unique", pd.Series([None])).iloc[0]) if not row.empty else None
+        base_in_range = int(sv_rng["count"].sum()) if len(sv_rng) else 0
 
-        if not row.empty:
-            # Extra context metrics if available
-            if pd.notna(row.iloc[0].get("n_records", np.nan)):
-                st.metric("Records (summary)", f"{int(row.iloc[0]['n_records']):,}")
-            if pd.notna(row.iloc[0].get("n_unique", np.nan)):
-                st.metric("Unique (summary)", f"{int(row.iloc[0]['n_unique']):,}")
-            n_pub = row.iloc[0].get("n_published", np.nan)
-            pct = row.iloc[0].get("pct_published", np.nan)
-            if pd.notna(n_pub) and pd.notna(pct):
-                # Show both count and percent in one metric
-                st.metric("Published (summary)", f"{int(n_pub):,} ({float(pct):.2f}%)")
-            elif pd.notna(n_pub):
-                st.metric("Published (summary)", f"{int(n_pub):,}")
-            elif pd.notna(pct):
-                st.metric("% Published (summary)", f"{float(pct):.2f}%")
-            if 'n_is_version_of' in row.columns and pd.notna(row.iloc[0].get('n_is_version_of')):
-                st.metric("Version(s)", f"{int(row.iloc[0]['n_is_version_of']):,}")
-            if pd.notna(row.iloc[0].get("count_2024", np.nan)) or pd.notna(row.iloc[0].get("count_2025", np.nan)):
-                c24 = row.iloc[0].get("count_2024", np.nan)
-                c25 = row.iloc[0].get("count_2025", np.nan)
-                if pd.notna(c24): st.caption(f"Count 2024 (summary): **{int(c24):,}**")
-                if pd.notna(c25): st.caption(f"Count 2025 (summary): **{int(c25):,}**")
+        # --- Required order ---
+        # 1) Preprints (all-time, unique)
+        st.metric("Preprints (all-time, unique)",
+                  f"{base_all_time:,}" if base_all_time or base_all_time == 0 else "—")
+
+        # 2) Preprints with >1 Version (all-time, unique)
+        n_vers = _int_or_zero(row.get("n_is_version_of", pd.Series([None])).iloc[0]) if not row.empty else None
+        st.metric("Preprints with >1 Version (all-time, unique)",
+                  _fmt_count_pct(n_vers, base_all_time))
+
+        # 3) Preprints linked to Publications (all-time, unique)
+        n_pub = _int_or_zero(row.get("n_published", pd.Series([None])).iloc[0]) if not row.empty else None
+        st.metric("Preprints linked to Publications (all-time, unique)",
+                  _fmt_count_pct(n_pub, base_all_time))
+
+        st.markdown("---")
+
+        # 4) Preprints (active in selected range)
+        st.metric("Preprints (active in selected range)", f"{base_in_range:,}")
+
+        # 5) Preprints with >1 Versions (active in selected range) → N/A
+        st.metric("Preprints with >1 Versions (active in selected range)", "N/A")
+        st.caption("Requires version flags by year in the yearly file.")
+
+        # 6) Preprints linked to Publications (active in selected range) → N/A
+        st.metric("Preprints linked to Publications (active in selected range)", "N/A")
+        st.caption("Requires publication-link flags by year in the yearly file.")
 
     # Bigger, cleaner Summary row
     st.markdown("### Summary row")
@@ -608,11 +654,10 @@ elif section_key == "explorer":
         row.reset_index(drop=True),
         use_container_width=False,
         hide_index=True,
-        # height=260,  # larger, impactful view
     )
 
     with right:
-        # Header + Download button on same row (clean + actionable)
+        # Header + Download button on same row
         hdr_col, dl_col = st.columns([4, 1], gap="small")
         with hdr_col:
             st.caption("Yearly trend")
@@ -647,9 +692,6 @@ elif section_key == "explorer":
             )
             fig.update_layout(showlegend=False, margin=dict(t=60, r=20, b=40, l=60))
             st.plotly_chart(fig, use_container_width=True)
-
-
-
 
 elif section_key == "compare":
     st.subheader("Compare Sources")
@@ -752,4 +794,18 @@ elif section_key == "data":
     )
     download_csv(yearly, "⬇️ Download yearly (cleaned long, CSV)", "yearly_cleaned_long.csv")
 
-    
+    st.caption(
+        "Notes: "
+        "• ‘Original’ tables reflect exactly what was bundled in `data/`. "
+        "• ‘Cleaned long’ is the normalized format used for charts (one row per server-year)."
+    )
+
+# elif section_key == "about":
+#     st.header("ℹ️ About this app")
+#     about_path = "about.md"
+#     if os.path.exists(about_path):
+#         with open(about_path, "r", encoding="utf-8") as f:
+#             about_md = f.read()
+#         st.markdown(about_md, unsafe_allow_html=True)
+#     else:
+#         st.warning("about.md file not found. Add it to your app directory.")
