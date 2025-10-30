@@ -809,3 +809,28 @@ elif section_key == "data":
 #         st.markdown(about_md, unsafe_allow_html=True)
 #     else:
 #         st.warning("about.md file not found. Add it to your app directory.")
+
+elif section_key == "about":
+    st.header("ℹ️ About this app")
+
+    def read_md(path):
+        import pathlib
+        try:
+            return pathlib.Path(path).read_text(encoding="utf-8")
+        except:
+            return f"⚠️ Missing file: {path}"
+
+    tabs = st.tabs(["Overview", "Methods", "Using the app", "Team & Contact", "Changelog"])
+
+    with tabs[0]:
+        st.markdown(read_md("about/overview.md"))
+    with tabs[1]:
+        st.markdown(read_md("about/methods.md"))
+    with tabs[2]:
+        st.markdown(read_md("about/use_app.md"))
+    with tabs[3]:
+        st.markdown(read_md("about/team_contact.md"))
+    with tabs[4]:
+        st.markdown(read_md("about/changelog.md"))
+
+
