@@ -362,13 +362,13 @@ if section_key == "overview":
     d1, d2, d3, d4 = st.columns(4)
 
     d1.metric("Preprints with >1 Version (active in selected range)", "N/A")
-    d1.caption("Not available from yearly totals (no version flags by year).")
+    # d1.caption("Not available from yearly totals (no version flags by year).")
 
     d2.metric("Preprints with >1 Version (all-time, unique)",
               _fmt_count_pct(total_versions_all_time, base_all_time))
 
     d3.metric("Preprints linked to Publications (active in selected range)", "N/A")
-    d3.caption("Not available from yearly totals (no publication-link flags by year).")
+    # d3.caption("Not available from yearly totals (no publication-link flags by year).")
 
     d4.metric("Preprints linked to Publications (all-time, unique)",
               _fmt_count_pct(total_published_all_time, base_all_time))
@@ -832,5 +832,6 @@ elif section_key == "about":
         st.markdown(read_md("about/team_contact.md"))
     with tabs[4]:
         st.markdown(read_md("about/changelog.md"))
+
 
 
