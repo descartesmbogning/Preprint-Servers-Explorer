@@ -642,11 +642,11 @@ elif section_key == "explorer":
 
         # 5) Preprints with >1 Versions (active in selected range) → N/A
         st.metric("Preprints with >1 Versions (active in selected range)", "N/A")
-        st.caption("Requires version flags by year in the yearly file.")
+        # st.caption("Requires version flags by year in the yearly file.")
 
         # 6) Preprints linked to Publications (active in selected range) → N/A
         st.metric("Preprints linked to Publications (active in selected range)", "N/A")
-        st.caption("Requires publication-link flags by year in the yearly file.")
+        # st.caption("Requires publication-link flags by year in the yearly file.")
 
     # Bigger, cleaner Summary row
     st.markdown("### Summary row")
@@ -832,6 +832,7 @@ elif section_key == "about":
         st.markdown(read_md("about/team_contact.md"))
     with tabs[4]:
         st.markdown(read_md("about/changelog.md"))
+
 
 
 
