@@ -1,0 +1,68 @@
+/* assets/layout.css */
+
+/* ─────────────────────────────────────────────
+   Ensure content isn't hidden behind sticky header/footer
+   (Uses the same values as brand.css)
+────────────────────────────────────────────── */
+.block-container {
+  padding-top: 88px;     /* header offset */
+  padding-bottom: 76px;  /* footer offset */
+}
+
+/* ─────────────────────────────────────────────
+   Sticky Header (inherits colors from brand.css)
+────────────────────────────────────────────── */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0; right: 0;
+  z-index: 9999;
+  background: var(--scl-bg);
+  border-bottom: 1px solid var(--scl-border);
+}
+
+.app-header .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 14px 18px; /* matches refined brand.css suggestion */
+}
+
+.app-header .title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* nav link highlight consistency */
+.app-header a {
+  text-decoration: none;
+  opacity: .92;
+  color: var(--scl-ink);
+}
+.app-header a.active {
+  font-weight: 700;
+  color: var(--scl-orange);
+}
+
+/* ─────────────────────────────────────────────
+   Sticky Footer (matches brand.css)
+────────────────────────────────────────────── */
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  z-index: 9998;
+  background: var(--scl-bg-2);
+  border-top: 1px solid var(--scl-border);
+}
+
+.app-footer .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  color: var(--scl-muted);
+}

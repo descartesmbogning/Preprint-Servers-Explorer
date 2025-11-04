@@ -1,0 +1,217 @@
+/* ============================================================
+   ScholCommLab — Streamlit Brand Theme
+   Fixed header + fixed footer + sidebar offset
+   ============================================================ */
+
+/* ---------- Brand palette ---------- */
+:root {
+  --scl-blue:   #3B77B5;
+  --scl-orange: #E25B2B;
+  --scl-ink:    #222;
+  --scl-muted:  #666;
+  --scl-bg:     #fff;
+  --scl-bg-2:   #F4F3F2;
+  --scl-border: #E6E2DF;
+
+  /* Layout: tune these if header/footer height changes */
+  --scl-header-h: 84px;     /* visual height reserved for header */
+  --scl-footer-h: 48px;
+  --scl-logo-h:   32px;     /* logo height; raise/lower as needed */
+}
+
+/* Dark mode matching ScholCommLab site feel */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --scl-ink:    #F2F2F2;
+    --scl-muted:  #CFCFCF;
+    --scl-bg:     #0E1117;
+    --scl-bg-2:   #1B1F2A;
+    --scl-border: #2A2F3A;
+  }
+}
+
+/* ---------- Content spacing so header/footer don't overlap ---------- */
+.block-container {
+  padding-top: calc(var(--scl-header-h) + 8px) !important;
+  padding-bottom: calc(var(--scl-footer-h) + 16px) !important;
+}
+
+/* ---------- Typography & links ---------- */
+h1, h2, h3 {
+  letter-spacing: .2px;
+  font-weight: 600 !important;
+}
+a, .stMarkdown a { color: var(--scl-blue); }
+a:hover, .stMarkdown a:hover { text-decoration: underline; }
+
+/* ---------- Cards ---------- */
+.scl-card {
+  background: var(--scl-bg);
+  border: 1px solid var(--scl-border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+/* ============================================================
+   HEADER (FIXED)
+   ============================================================ */
+.app-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10000;
+  background: var(--scl-bg);
+  border-bottom: 1px solid var(--scl-border);
+}
+.app-header .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 14px 18px;
+  min-height: calc(var(--scl-header-h) - 8px); /* ensures the reserved height is actually available */
+}
+
+/* Brand + logo */
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-brand img {
+  height:120px; /*var(--scl-logo-h); /* 🔧 change only --scl-logo-h above */
+
+}
+.app-brand .title {
+  font-weight: 700;
+  font-size: 1.9rem;
+  color: var(--scl-ink);
+  line-height: 1.2;
+}
+
+/* --------- NAV (flexible center column that can wrap/scroll) --------- */
+.nav {
+  flex: 1 1 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;     /* allows a 2nd line if needed */
+  overflow-x: auto;    /* allows horizontal scroll on narrow widths */
+  min-width: 220px;
+}
+.nav a {
+  text-decoration: none;
+  color: var(--scl-ink);
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin: 0 2px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.nav a:hover { border-color: var(--scl-border); }
+.nav a.active {
+  border-color: var(--scl-orange);
+  color: var(--scl-orange);
+  position: relative;
+}
+.nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 8px; right: 8px; bottom: -6px;
+  height: 3px;
+  background: var(--scl-orange);
+  border-radius: 2px;
+}
+
+/* --------- RIGHT LINKS (prevent crowding the nav) --------- */
+.right-links{
+  flex: 0 0 auto;
+  white-space: nowrap;
+  max-width: 28ch;          /* stop it from growing too wide */
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.right-links a{
+  text-decoration: none;
+  color: var(--scl-blue);
+}
+
+/* ============================================================
+   SIDEBAR — ALWAYS BELOW HEADER
+   ============================================================ */
+[data-testid="stSidebar"] {
+  margin-top: var(--scl-header-h) !important; /* sit below fixed header */
+  z-index: 9000 !important;                   /* keep it under the header */
+}
+[data-testid="stSidebar"] > div:first-child {
+  padding-top: 8px !important;                /* light breathing room */
+}
+
+/* ============================================================
+   FOOTER (FIXED)
+   ============================================================ */
+.app-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9998;
+  background: var(--scl-bg-2);
+  border-top: 1px solid var(--scl-border);
+}
+.app-footer .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 10px 16px;
+  font-size: .92rem;
+  color: var(--scl-muted);
+}
+.app-footer .links a {
+  color: var(--scl-blue);
+  text-decoration: none;
+  margin-left: 14px;
+}
+.app-footer .links a:hover { text-decoration: underline; }
+.app-footer .links .cta {
+  font-weight: 700; 
+  color: var(--scl-orange);
+  margin-left: 14px;
+}
+.partner-mark {
+  height: 16px;
+  margin-left: 10px;
+  opacity: .85;
+}
+
+/* ============================================================
+   Buttons — orange action accent
+   ============================================================ */
+.stButton>button, .stDownloadButton>button {
+  background: var(--scl-orange) !important;
+  color: #fff !important;
+  border: none !important;
+}
+.stButton>button:hover, .stDownloadButton>button:hover { filter: brightness(.95); }
+
+/* ============================================================
+   Mobile tweaks
+   ============================================================ */
+@media (max-width: 768px){
+  :root{
+    --scl-header-h: 128px;   /* give room for a wrapped 2-line nav */
+    --scl-logo-h:   28px;
+  }
+  .app-header .row{ flex-wrap: wrap; }
+  .app-brand{ order: 1; }
+  .right-links{ order: 2; }
+  .nav{
+    order: 3;
+    width: 100%;
+    justify-content: flex-start; /* left-align when wrapped */
+  }
+  .block-container{
+    padding-top: calc(var(--scl-header-h) + 12px) !important;
+    padding-bottom: calc(var(--scl-footer-h) + 30px) !important;
+  }
+}
