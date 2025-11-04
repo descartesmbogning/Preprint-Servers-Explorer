@@ -6,7 +6,27 @@ import streamlit as st
 import plotly.express as px
 from urllib.parse import quote, unquote
 
-st.set_page_config(page_title="Preprints Tracker", page_icon="📄", layout="wide")
+from components.layout import load_css, render_sticky_header, render_sticky_footer
+
+st.set_page_config(
+    page_title="Preprints Tracker — ScholCommLab",
+    page_icon="assets/scholcommlab-favicon.png",
+    layout="wide",
+)
+
+# load_css()
+load_css()
+
+
+# URL routing — get section from URL (no radio tabs)
+qp = st.query_params
+section_key = qp.get("section", "overview")
+
+# Header (render once)
+render_sticky_header(active_section=section_key)
+
+
+
 
 DATA_DIR = "data"  # put your files here: data/summary.csv, data/yearly.csv
 
@@ -311,12 +331,16 @@ _update_qp_if_changed(
 )
 
 # ─────────────── section/tab routing via URL ───────────────
-st.title("📄 Preprints Tracker")
+# st.title("📄 Preprints Tracker")
+last_dt = None  # <- ensure it's always defined
 if "collection_date" in summary.columns and summary["collection_date"].notna().any():
     last_dt = pd.to_datetime(summary["collection_date"], errors="coerce").max()
     if pd.notna(last_dt):
         st.caption(f"Last updated (collection_date): **{last_dt.date()}**")
 
+
+
+#  
 section_map = {
     "overview": "📊 Overview",
     "explorer": "🔎 Source Explorer",
@@ -328,14 +352,18 @@ rev_section_map = {v: k for k, v in section_map.items()}
 
 section_default_key = qp.get("section", "overview")
 section_default_label = section_map.get(section_default_key, "📊 Overview")
-section_label = st.radio(
-    "Section",
-    options=list(section_map.values()),
-    index=list(section_map.values()).index(section_default_label),
-    horizontal=True,
-)
-section_key = rev_section_map[section_label]
-_update_qp_if_changed(section=section_key)
+# section_label = st.radio(
+#     "Section",
+#     options=list(section_map.values()),
+#     index=list(section_map.values()).index(section_default_label),
+#     horizontal=True,
+# )
+# section_key = rev_section_map[section_label]
+# _update_qp_if_changed(section=section_key)
+# render_sticky_header(active_section=section_key)
+# section_key = st.query_params.get("section", "overview")
+# render_sticky_header(active_section=section_key)
+
 
 # ───────────────────────── sections ─────────────────────────
 
@@ -362,13 +390,13 @@ if section_key == "overview":
     d1, d2, d3, d4 = st.columns(4)
 
     d1.metric("Preprints with >1 Version (active in selected range)", "N/A")
-    # d1.caption("Not available from yearly totals (no version flags by year).")
+    d1.caption("Not available from yearly totals (no version flags by year).")
 
     d2.metric("Preprints with >1 Version (all-time, unique)",
               _fmt_count_pct(total_versions_all_time, base_all_time))
 
     d3.metric("Preprints linked to Publications (active in selected range)", "N/A")
-    # d3.caption("Not available from yearly totals (no publication-link flags by year).")
+    d3.caption("Not available from yearly totals (no publication-link flags by year).")
 
     d4.metric("Preprints linked to Publications (all-time, unique)",
               _fmt_count_pct(total_published_all_time, base_all_time))
@@ -432,6 +460,7 @@ if section_key == "overview":
                 orientation="h",
                 labels={"total": "Total preprints", "server_name": "Server"},
                 title=f"Top {topN} sources{rank_title_suffix}",
+                color="server_name",
                 color_discrete_map=color_map,
                 category_orders={"server_name": top_df.sort_values("total", ascending=True)["server_name"].tolist()},
             )
@@ -642,11 +671,11 @@ elif section_key == "explorer":
 
         # 5) Preprints with >1 Versions (active in selected range) → N/A
         st.metric("Preprints with >1 Versions (active in selected range)", "N/A")
-        # st.caption("Requires version flags by year in the yearly file.")
+        st.caption("Requires version flags by year in the yearly file.")
 
         # 6) Preprints linked to Publications (active in selected range) → N/A
         st.metric("Preprints linked to Publications (active in selected range)", "N/A")
-        # st.caption("Requires publication-link flags by year in the yearly file.")
+        st.caption("Requires publication-link flags by year in the yearly file.")
 
     # Bigger, cleaner Summary row
     st.markdown("### Summary row")
@@ -779,11 +808,11 @@ elif section_key == "data":
 
     st.divider()
 
-    st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
-    show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False, key="show_all_yr")
-    yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
-    st.dataframe(yr_view, use_container_width=True, hide_index=True)
-    download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
+    # st.markdown(f"### Yearly (original columns, wide) · {len(yearly_raw):,} rows")
+    # show_all_yr = st.checkbox("Show all rows (yearly, wide)", value=False, key="show_all_yr")
+    # yr_view = yearly_raw if show_all_yr else yearly_raw.head(200)
+    # st.dataframe(yr_view, use_container_width=True, hide_index=True)
+    # download_csv(yearly_raw, "⬇️ Download yearly (original wide, CSV)", "yearly_original_wide.csv")
 
     st.markdown(f"### Yearly (cleaned, long) · {len(yearly):,} rows")
     show_all_long = st.checkbox("Show all rows (yearly, long)", value=False, key="show_all_long")
@@ -833,6 +862,32 @@ elif section_key == "about":
     with tabs[4]:
         st.markdown(read_md("about/changelog.md"))
 
+# # Create a single zipped export dynamically (example)
+# # If you already have files, just link them.
+# import io, zipfile
+# buff = io.BytesIO()
+# with zipfile.ZipFile(buff, "w", zipfile.ZIP_DEFLATED) as z:
+#     z.writestr("summary.csv", summary_raw.to_csv(index=False))
+#     z.writestr("yearly.csv", yearly_raw.to_csv(index=False))
+# z_payload = buff.getvalue()
 
+# # Serve as a download button and a sticky link
+# st.download_button(
+#     "⬇️ Download full dataset (ZIP)",
+#     data=z_payload,
+#     file_name="preprints_dataset.zip",
+#     mime="application/zip",
+#     use_container_width=False,
+# )
 
+# # Sticky floating link (duplicate access)
+# st.markdown(
+#     """
+#     <div class="sticky-cta">
+#       <a href="#download">⬇️ Download full dataset</a>
+#     </div>
+#     """,
+#     unsafe_allow_html=True
+# )
 
+render_sticky_footer(last_dt)
