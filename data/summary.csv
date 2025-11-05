@@ -1,0 +1,556 @@
+server_name,number_of_preprint_records,is_published,is_version_of,source,collection_date,%_published,number_of_preprint_unique,count_in_2024,count_in_2025,source_id
+1 million homes,31,0.0,0.0,Crossref,2025-10-31,0.0,31.0,0,0,
+A.P. Ershov Institute of Informatics Systems SB RAS,5,0.0,0.0,Crossref,2025-10-31,0.0,5.0,0,0,
+AIJR Preprints,143,0.0,0.0,Crossref,2025-10-31,0.0,143.0,6,5,
+APSA Preprints,1460,179.0,358.0,Crossref,2025-10-31,12.26027397260274,1102.0,194,253,
+ARPHA Preprints,852,408.0,0.0,Crossref,2025-10-31,47.88732394366197,852.0,185,181,
+Accademia della Crusca,20,0.0,0.0,Crossref,2025-10-31,0.0,20.0,0,0,
+Access Microbiology,1381,966.0,720.0,Crossref,2025-10-31,69.94931209268645,661.0,463,355,
+Acta Cybernetica,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,2,0,
+Advance,4406,309.0,39.0,Crossref,2025-10-31,7.013163867453473,4367.0,517,393,
+Aerosol Research,83,58.0,0.0,Crossref,2025-10-31,69.87951807228916,83.0,35,31,
+AfricArXiv,504,46.0,0.0,Crossref,2025-10-31,9.126984126984127,504.0,17,0,
+AgriRxiv,814,13.0,0.0,Crossref,2025-10-31,1.597051597051597,814.0,70,89,
+Amsterdam University Press,4,0.0,0.0,Crossref,2025-10-31,0.0,4.0,2,0,
+Annales Geophysicae,474,394.0,0.0,Crossref,2025-10-31,83.12236286919831,474.0,23,2,
+Aquaculture Compendium,165,0.0,0.0,Crossref,2025-10-31,0.0,165.0,0,0,
+Arabixiv,502,221.0,0.0,Crossref,2025-10-31,44.02390438247012,502.0,0,0,
+Archivos Espanoles de Urologia,31,0.0,0.0,Crossref,2025-10-31,0.0,31.0,0,0,
+Association of Medical and Pharmaceutical Law,5,0.0,0.0,Crossref,2025-10-31,0.0,5.0,2,0,
+Associação Brasileira de Otorrinolaringologia e Cirurgia Cérvico-Facial,27,0.0,0.0,Crossref,2025-10-31,0.0,27.0,0,0,
+Atmospheric Chemistry and Physics,14084,13299.0,0.0,Crossref,2025-10-31,94.42629934677649,14084.0,3,0,
+Atmospheric Measurement Techniques,4796,4519.0,0.0,Crossref,2025-10-31,94.22435362802335,4796.0,165,14,
+Atomic Academia Preprint Journal,13,0.0,0.0,Crossref,2025-10-31,0.0,13.0,13,0,
+Authorea Inc.,64706,4.0,2195.0,Crossref,2025-10-31,0.006181806942169196,62511.0,15422,10939,
+B,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+BITSS,21,0.0,0.0,Crossref,2025-10-31,0.0,21.0,0,0,
+Balliol College,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Beilstein Archives,692,443.0,0.0,Crossref,2025-10-31,64.01734104046243,692.0,73,60,
+Beinecke Rare Book and Manuscript Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+BioHackrXiv,131,0.0,3.0,Crossref,2025-10-31,0.0,128.0,35,36,
+Biogeosciences,6235,5510.0,0.0,Crossref,2025-10-31,88.37209302325581,6235.0,4,0,
+Biophysics Colab,27,1.0,27.0,Crossref,2025-10-31,3.7037037037037033,0.0,5,5,
+Bodleian Library,26,0.0,0.0,Crossref,2025-10-31,0.0,26.0,0,0,
+BodoArXiv,160,35.0,1.0,Crossref,2025-10-31,21.875,159.0,11,27,
+Boise State University,79,0.0,0.0,Crossref,2025-10-31,0.0,79.0,0,0,
+British Library,42,0.0,0.0,Crossref,2025-10-31,0.0,42.0,0,0,
+CDRXIV,34,2.0,0.0,Crossref,2025-10-31,5.88235294117647,34.0,4,30,
+CEUR Workshop Proceedings (CEUR-WS.org),19,0.0,0.0,Crossref,2025-10-31,0.0,19.0,0,0,
+CRIORG.institute,10,0.0,0.0,Crossref,2025-10-31,0.0,10.0,0,0,
+Cambridge Open Engage,2646,173.0,914.0,Crossref,2025-10-31,6.53817082388511,1732.0,602,727,
+Cambridge University Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Carleton University Institutional Repository,15,0.0,0.0,Crossref,2025-10-31,0.0,15.0,0,0,
+Centro de Investigacion sobre Desarrollo Humano y Sociedad (Coideso),8,0.0,1.0,Crossref,2025-10-31,0.0,7.0,0,0,
+ChemRxiv,44915,17667.0,12529.0,Crossref,2025-10-31,39.3342981186686,32386.0,8791,8458,
+Climate of the Past,2168,1889.0,0.0,Crossref,2025-10-31,87.13099630996311,2168.0,63,1,
+CoP,28,5.0,0.0,Crossref,2025-10-31,17.857142857142858,28.0,9,6,
+Cold Spring Harbor Laboratory Press,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Collection of the Duke of Northumberland,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+College of Arms,11,0.0,0.0,Crossref,2025-10-31,0.0,11.0,0,0,
+Conselho Federal de Contabilidade (CFC),36,0.0,0.0,Crossref,2025-10-31,0.0,36.0,0,0,
+"Corpus Christi College, Oxford",1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Covid-19 Preprints,633,0.0,0.0,Crossref,2025-10-31,0.0,633.0,104,89,
+CrimRxiv,423,2.0,13.0,Crossref,2025-10-31,0.4728132387706856,410.0,35,36,
+Crop Protection Compendium,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+Crossref,7,6.0,2.0,Crossref,2025-10-31,85.71428571428571,5.0,1,3,
+Curriculum Theologiae,4,0.0,0.0,Crossref,2025-10-31,0.0,4.0,0,0,
+Curvenote Research,7,0.0,0.0,Crossref,2025-10-31,0.0,7.0,3,4,
+Deep Science,106,0.0,0.0,Crossref,2025-10-31,0.0,106.0,5,0,
+Developer Notes,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,3,
+Digital Humanities Curricular Development Assignments,17,0.0,0.0,Crossref,2025-10-31,0.0,17.0,0,0,
+Digital Humanities Curricular Development Syllabi,16,0.0,0.0,Crossref,2025-10-31,0.0,16.0,0,0,
+Diocese of Worcester,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,0,
+Dirección de Educación Policial de la Policía Nacional de Colombia,12,0.0,0.0,Crossref,2025-10-31,0.0,12.0,0,0,
+Drinking Water Engineering and Science,168,119.0,0.0,Crossref,2025-10-31,70.83333333333334,168.0,0,0,
+Dulwich College,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+ECSarXiv,313,23.0,3.0,Crossref,2025-10-31,7.348242811501597,310.0,22,19,
+EGUsphere,9898,5426.0,12.0,Crossref,2025-10-31,54.81915538492624,9886.0,2921,3756,
+ESIS-PS,4,0.0,0.0,Crossref,2025-10-31,0.0,4.0,4,0,
+Earth Surface Dynamics,581,552.0,0.0,Crossref,2025-10-31,95.00860585197934,581.0,0,0,
+Earth System Dynamics,784,667.0,0.0,Crossref,2025-10-31,85.0765306122449,784.0,27,5,
+Earth System Science Data,2459,1931.0,0.0,Crossref,2025-10-31,78.52785685237902,2459.0,306,354,
+Earth and Environmental Sciences,258,9.0,39.0,Crossref,2025-10-31,3.488372093023256,219.0,63,45,
+Earth and Space Science Open Archive,15098,2979.0,466.0,Crossref,2025-10-31,19.731090210623925,14632.0,2502,3015,
+EarthArXiv,6493,1309.0,0.0,Crossref,2025-10-31,20.16017249345449,6493.0,904,1263,
+East Sussex Record Office,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+EcoEvoRxiv,2756,63.0,0.0,Crossref,2025-10-31,2.285921625544267,2756.0,597,724,
+Economics Working Papers,52,0.0,0.0,Crossref,2025-10-31,0.0,52.0,0,0,
+EdArXiv,2386,222.0,108.0,Crossref,2025-10-31,9.304274937133277,2278.0,298,516,
+Edinburgh University Library,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,0,
+Electronic Enlightenment,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Elizabethan Club,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+EmeRI,8,0.0,0.0,Crossref,2025-10-31,0.0,8.0,0,0,
+Encyclopedia (MDPI platform),166,0.0,11.0,Crossref,2025-10-31,0.0,155.0,0,0,
+EnerarXiv,204,0.0,0.0,Crossref,2025-10-31,0.0,204.0,0,0,
+Energy Proceedings,3067,0.0,0.0,Crossref,2025-10-31,0.0,3067.0,509,13,
+Even3,1499,0.0,0.0,Crossref,2025-10-31,0.0,1499.0,300,233,
+Evrim Ağacı Articles,175,0.0,0.0,Crossref,2025-10-31,0.0,175.0,7,0,
+Explore Science,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,2,
+Federal Reserve Bank of Minneapolis Research Division,1332,582.0,0.0,Crossref,2025-10-31,43.69369369369369,1332.0,15,16,
+Firenze University Press,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+"Fitzwilliam Museum, Cambridge",2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+FocUS Archive,81,3.0,0.0,Crossref,2025-10-31,3.7037037037037033,81.0,10,6,
+Folger Shakespeare Library,131,0.0,0.0,Crossref,2025-10-31,0.0,131.0,0,0,
+Forestry Compendium,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Frenxiv,179,36.0,0.0,Crossref,2025-10-31,20.11173184357542,179.0,0,0,
+Frontiers of Biogeography (FoB),1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+GRO.publications,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Geochronology,171,155.0,0.0,Crossref,2025-10-31,90.64327485380117,171.0,29,2,
+Geoscience Communication,129,113.0,0.0,Crossref,2025-10-31,87.59689922480621,129.0,8,0,
+"Geoscientific Instrumentation, Methods and Data Systems",395,364.0,0.0,Crossref,2025-10-31,92.15189873417722,395.0,12,1,
+Geoscientific Model Development,3422,3148.0,0.0,Crossref,2025-10-31,91.99298655756867,3422.0,184,21,
+Hampshire Record Office,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Harvard Data Science Review,6,0.0,0.0,Crossref,2025-10-31,0.0,6.0,2,4,
+Hatfield House,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+History of Geo- and Space Sciences,43,30.0,0.0,Crossref,2025-10-31,69.76744186046511,43.0,11,7,
+Holkham Estate,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Holy Trinity Church,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Horizon Academic Research Program,177,0.0,0.0,Crossref,2025-10-31,0.0,177.0,35,0,
+Huntington Library,14,0.0,0.0,Crossref,2025-10-31,0.0,14.0,0,0,
+Hydrology and Earth System Sciences,5916,4830.0,0.0,Crossref,2025-10-31,81.64300202839758,5916.0,190,21,
+IEEE Brain Publications,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+IMarEST,180,0.0,0.0,Crossref,2025-10-31,0.0,180.0,77,0,
+INA-Rxiv,17837,1522.0,0.0,Crossref,2025-10-31,8.53282502663004,17837.0,0,0,
+Ideal Teachers' Training College,15,10.0,0.0,Crossref,2025-10-31,66.66666666666666,15.0,12,3,
+Independent Scholar,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,2,
+IndiaRxiv,141,12.0,0.0,Crossref,2025-10-31,8.51063829787234,141.0,2,0,
+Indiana University,12,1.0,0.0,Crossref,2025-10-31,8.333333333333332,12.0,0,0,
+Institute Working Paper,117,26.0,0.0,Crossref,2025-10-31,22.22222222222222,117.0,27,9,
+Instituto Brasileiro de Informação em Ciência e Tecnologia (Ibict),3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,0,
+Internet2 Trust and Identity Policy,17,0.0,0.0,Crossref,2025-10-31,0.0,17.0,0,0,
+Invasive Species Compendium,275,0.0,0.0,Crossref,2025-10-31,0.0,275.0,0,0,
+JMIR Preprints,36358,24071.0,0.0,Crossref,2025-10-31,66.20551185433742,36358.0,5211,3721,
+JNOS,8,1.0,1.0,Crossref,2025-10-31,12.5,7.0,4,3,
+JOMI,38,1.0,0.0,Crossref,2025-10-31,2.631578947368421,38.0,0,0,
+Kent History and Library Centre,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+LIS Scholarship Archive,395,67.0,9.0,Crossref,2025-10-31,16.962025316455694,386.0,8,21,
+Lambeth Palace Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+LatArXiv,109,3.0,1.0,Crossref,2025-10-31,2.7522935779816518,108.0,43,66,
+Law Archive,1761,96.0,2.0,Crossref,2025-10-31,5.45144804088586,1759.0,38,114,
+Lear Review Preprints,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,1,
+Lesson Plans,13,0.0,0.0,Crossref,2025-10-31,0.0,13.0,0,0,
+Lifecycle Journal,9,0.0,0.0,Crossref,2025-10-31,0.0,9.0,0,9,
+Lippincott® Preprints,56,6.0,0.0,Crossref,2025-10-31,10.714285714285714,56.0,0,0,
+London Metropolitan Archives,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,0,
+MDR : Materials Data Repository,52,0.0,0.0,Crossref,2025-10-31,0.0,52.0,0,0,
+MELBA journal,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,1,0,
+MOspace Institutional Repository,130,0.0,0.0,Crossref,2025-10-31,0.0,130.0,59,6,
+Magnetic Resonance,168,152.0,0.0,Crossref,2025-10-31,90.47619047619048,168.0,21,15,
+MarXiv,508,249.0,2.0,Crossref,2025-10-31,49.01574803149607,506.0,2,4,
+Mathematics in Industry Reports,145,0.0,17.0,Crossref,2025-10-31,0.0,128.0,22,3,
+MediArXiv,309,78.0,7.0,Crossref,2025-10-31,25.24271844660194,302.0,21,42,
+MetaArXiv,831,128.0,53.0,Crossref,2025-10-31,15.403128760529484,778.0,87,138,
+MetaROR,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,1,
+Middlebury Institutional Repository,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+MindRxiv,335,113.0,0.0,Crossref,2025-10-31,33.731343283582085,335.0,1,0,
+NAVIGATION: Journal of the Institute of Navigation - Preprints,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+National Institute of Standards and Technology (NIST),107,102.0,0.0,Crossref,2025-10-31,95.32710280373831,107.0,0,0,
+National Library of Scotland,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+Natural Hazards and Earth System Sciences,2641,2158.0,0.0,Crossref,2025-10-31,81.71147292692163,2641.0,137,11,
+Natural Philosophy: 002,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,0,
+NebRxiv,4,0.0,0.0,Crossref,2025-10-31,0.0,4.0,0,0,
+NeuroLibre Reproducible Preprints,17,0.0,0.0,Crossref,2025-10-31,0.0,17.0,4,7,
+New England Historic Genealogical Society,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+New York Public Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+NewAddictionsX,5,0.0,2.0,Crossref,2025-10-31,0.0,3.0,2,3,
+Nonlinear Processes in Geophysics,447,365.0,0.0,Crossref,2025-10-31,81.65548098434004,447.0,22,0,
+NutriXiv,94,17.0,0.0,Crossref,2025-10-31,18.085106382978726,94.0,1,0,
+O2M Newsletters,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+OBP Blog,275,0.0,0.0,Crossref,2025-10-31,0.0,275.0,18,11,
+Ocean Science,1361,1149.0,0.0,Crossref,2025-10-31,84.42321822189567,1361.0,0,0,
+Open Access Victoria University of Wellington | Te Herenga Waka,9,1.0,0.0,Crossref,2025-10-31,11.11111111111111,9.0,6,0,
+Open Anthropology Research Repository,43,4.0,0.0,Crossref,2025-10-31,9.30232558139535,43.0,0,0,
+Open Science Brazil,15,0.0,0.0,Crossref,2025-10-31,0.0,15.0,0,1,
+Open Science Framework,103471,7043.0,2097.0,Crossref,2025-10-31,6.806738119859671,101374.0,6407,7019,
+Optica Open,4505,1895.0,0.0,Crossref,2025-10-31,42.06437291897892,4505.0,1649,1347,
+Paideia Studio,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,1,
+PaleorXiv,283,116.0,12.0,Crossref,2025-10-31,40.98939929328622,271.0,13,26,
+Pandemic Pandemonium,16,0.0,0.0,Crossref,2025-10-31,0.0,16.0,0,0,
+Peaceful Science,58,0.0,0.0,Crossref,2025-10-31,0.0,58.0,5,0,
+PeerJ Preprints,6448,0.0,0.0,Crossref,2025-10-31,0.0,6448.0,0,0,
+PoolText,79,14.0,0.0,Crossref,2025-10-31,17.72151898734177,79.0,0,0,
+Pre Print of Professionals On Line,13,0.0,0.0,Crossref,2025-10-31,0.0,13.0,5,0,
+PrePrint UEA,480,2.0,0.0,Crossref,2025-10-31,0.4166666666666667,480.0,7,37,
+PreServe Preprints Server,22,0.0,0.0,Crossref,2025-10-31,0.0,22.0,3,2,
+Preprints NDT.net,22,0.0,0.0,Crossref,2025-10-31,0.0,22.0,19,2,
+Preprints.org,111100,61713.0,12645.0,Crossref,2025-10-31,55.54725472547255,98455.0,28620,26699,
+Preprints.ru,1154,3.0,0.0,Crossref,2025-10-31,0.25996533795493937,1154.0,241,332,
+Proceedings of the American Mathematical Society,134,0.0,0.0,Crossref,2025-10-31,0.0,134.0,25,8,
+Protocol Exchange,182,0.0,0.0,Crossref,2025-10-31,0.0,182.0,0,0,
+PsyArXiv,55374,7573.0,4980.0,Crossref,2025-10-31,13.676093473471305,50394.0,7588,12832,
+Qeios,5586,0.0,1811.0,Crossref,2025-10-31,0.0,3775.0,1833,939,
+REPISALUD,3,0.0,0.0,Crossref,2025-10-31,0.0,3.0,0,2,
+Repositorio Preprints - Universidad de Concepción,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Repositorio Universidad de Lima - Prepublicaciones,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Repozytorium Uniwersytetu w Białymstoku (RUB),1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Research Archive of Rising Scholars,1933,0.0,0.0,Crossref,2025-10-31,0.0,1933.0,767,657,
+Research Catalogue,1005,0.0,0.0,Crossref,2025-10-31,0.0,1005.0,158,246,
+Research Square,438219,147349.0,14865.0,Crossref,2025-10-31,33.62451194494077,423354.0,73592,49044,
+Revistas Medicas,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+Rhode Island College,432,0.0,0.0,Crossref,2025-10-31,0.0,432.0,5,0,
+Rhode Island Current Conditions Index,204,0.0,0.0,Crossref,2025-10-31,0.0,204.0,0,0,
+Rhodes University,24,2.0,0.0,Crossref,2025-10-31,8.333333333333332,24.0,0,0,
+Russian Agency for Digital Standardization (RADS),189,0.0,0.0,Crossref,2025-10-31,0.0,189.0,84,64,
+Ryerson University,3,2.0,0.0,Crossref,2025-10-31,66.66666666666666,3.0,0,0,
+SAE MobilityRxiv,106,16.0,0.0,Crossref,2025-10-31,15.09433962264151,106.0,14,0,
+SHAREOK Repository,5,0.0,0.0,Crossref,2025-10-31,0.0,5.0,0,0,
+SOIL,356,294.0,0.0,Crossref,2025-10-31,82.58426966292134,356.0,0,0,
+SSRN,443591,213.0,0.0,Crossref,2025-10-31,0.048017205037974166,443591.0,177007,152023,
+Safety of Nuclear Waste Disposal,7,2.0,0.0,Crossref,2025-10-31,28.57142857142857,7.0,2,5,
+San José State University ScholarWorks,21,0.0,0.0,Crossref,2025-10-31,0.0,21.0,0,0,
+Sch�yen Collection,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+SciELO Preprints,3932,5.0,1.0,Crossref,2025-10-31,0.1271617497456765,3931.0,787,831,
+ScieRxiv,80,1.0,0.0,Crossref,2025-10-31,1.25,80.0,9,71,
+ScienceOpen,2195,0.0,0.0,Crossref,2025-10-31,0.0,2195.0,441,319,
+Sciencepaper Online,47,0.0,0.0,Crossref,2025-10-31,0.0,47.0,20,27,
+"Seminar für Englische Philologie, Georg-August-Universität Göttingen",1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Shakespeare Birthplace Trust,108,0.0,0.0,Crossref,2025-10-31,0.0,108.0,0,0,
+Shakespeare Documented,5,0.0,0.0,Crossref,2025-10-31,0.0,5.0,0,0,
+SocArXiv,20854,5253.0,859.0,Crossref,2025-10-31,25.189412103193632,19995.0,2325,3365,
+Solid Earth,1111,980.0,0.0,Crossref,2025-10-31,88.20882088208822,1111.0,0,0,
+South West Heritage Trust,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+SportRxiv,851,78.0,1.0,Crossref,2025-10-31,9.16568742655699,850.0,110,118,
+State of the Planet,106,76.0,0.0,Crossref,2025-10-31,71.69811320754717,106.0,38,18,
+Substack,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,2,
+Substack Scholarly Posts,13,0.0,0.0,Crossref,2025-10-31,0.0,13.0,0,13,
+Swarthmore College,4,0.0,0.0,Crossref,2025-10-31,0.0,4.0,0,0,
+SwissMedPreprints,12,0.0,0.0,Crossref,2025-10-31,0.0,12.0,10,2,
+Syndics of Cambridge University Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+TechRxiv,27767,4632.0,1071.0,Crossref,2025-10-31,16.681672488925702,26696.0,3566,5366,
+Technische Hochschule Wildau,9,0.0,0.0,Crossref,2025-10-31,0.0,9.0,0,0,
+Test accounts,6,0.0,0.0,Crossref,2025-10-31,0.0,6.0,0,0,
+The British Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+The Cryosphere,2971,2622.0,0.0,Crossref,2025-10-31,88.25311342982161,2971.0,0,0,
+The National Archives,113,0.0,0.0,Crossref,2025-10-31,0.0,113.0,0,0,
+The Society of Antiquaries of London,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+"The United Nations Educational, Scientific and Cultural Organization",1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+The Worshipful Company of Stationers and Newspaper Makers,40,0.0,0.0,Crossref,2025-10-31,0.0,40.0,0,0,
+Therapoid,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+Thesis Commons,3960,978.0,41.0,Crossref,2025-10-31,24.6969696969697,3919.0,345,307,
+TopQAD,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,1,0,
+Toronto Metropolitan University,757,558.0,0.0,Crossref,2025-10-31,73.71202113606341,757.0,171,48,
+Transactions of the American Mathematical Society,96,0.0,0.0,Crossref,2025-10-31,0.0,96.0,30,14,
+"Trinity College, Cambridge",2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+UCL Open Environment,47,0.0,0.0,Crossref,2025-10-31,0.0,47.0,22,22,
+UMSIDA Preprints Server,4615,0.0,0.0,Crossref,2025-10-31,0.0,4615.0,2077,41,
+UNESCO-IHP,216,0.0,0.0,Crossref,2025-10-31,0.0,216.0,0,0,
+USFQ Law Working Papers,31,0.0,0.0,Crossref,2025-10-31,0.0,31.0,1,0,
+University of Bamberg FIS,28,27.0,1.0,Crossref,2025-10-31,96.42857142857143,27.0,0,0,
+University of Illinois at Urbana-Champaign,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+University of Iowa,104,15.0,0.0,Crossref,2025-10-31,14.423076923076922,104.0,1,5,
+University of Manchester,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+University of New Hampshire,7,0.0,0.0,Crossref,2025-10-31,0.0,7.0,1,1,
+University of South Florida Libraries,39,0.0,0.0,Crossref,2025-10-31,0.0,39.0,0,0,
+University of Southern Mississippi,1557,0.0,0.0,Crossref,2025-10-31,0.0,1557.0,236,0,
+University of the Free State,6,0.0,0.0,Crossref,2025-10-31,0.0,6.0,0,2,
+Verfassungsblog,2126,0.0,0.0,Crossref,2025-10-31,0.0,2126.0,1101,805,
+VeriXiv,421,39.0,34.0,Crossref,2025-10-31,9.263657957244655,387.0,37,384,
+Weather and Climate Dynamics,225,207.0,0.0,Crossref,2025-10-31,92.0,225.0,0,0,
+West Virginia University,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,0,0,
+William Salt Library,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+Williams College,6,0.0,0.0,Crossref,2025-10-31,0.0,6.0,0,5,
+Wind Energy Science,1102,787.0,0.0,Crossref,2025-10-31,71.41560798548095,1102.0,149,191,
+Worcestershire Archive and Archaeology Service,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,0,0,
+World Health Organization,43,0.0,0.0,Crossref,2025-10-31,0.0,43.0,0,0,
+ayurCASERxiv,7,0.0,0.0,Crossref,2025-10-31,0.0,7.0,0,0,
+bioRxiv,306424,105233.0,0.0,Crossref,2025-10-31,34.34228389421194,306424.0,43599,43577,
+digitalCC,280,0.0,0.0,Crossref,2025-10-31,0.0,280.0,97,91,
+eLIBRARY.RU,509,0.0,0.0,Crossref,2025-10-31,0.0,509.0,326,131,
+eLife,9138,709.0,9133.0,Crossref,2025-10-31,7.758809367476472,5.0,3759,3710,
+eScholarship Publishing,7,0.0,0.0,Crossref,2025-10-31,0.0,7.0,0,0,
+engrXiv,4788,486.0,0.0,Crossref,2025-10-31,10.150375939849624,4788.0,640,1049,
+eprints.openaccess,8,0.0,0.0,Crossref,2025-10-31,0.0,8.0,0,0,
+figshare,1,0.0,0.0,Crossref,2025-10-31,0.0,1.0,1,0,
+interactives Journal Preprints,11,0.0,0.0,Crossref,2025-10-31,0.0,11.0,0,11,
+medRxiv,75157,32324.0,0.0,Crossref,2025-10-31,43.008635256862306,75157.0,12855,13017,
+plaNext-Next Generation Planning,123,0.0,0.0,Crossref,2025-10-31,0.0,123.0,0,0,
+prepare@u,225,0.0,0.0,Crossref,2025-10-31,0.0,225.0,27,1,
+protocols.io,30131,0.0,4055.0,Crossref,2025-10-31,0.0,26076.0,3112,1688,
+the Free University Publishing House,2,0.0,0.0,Crossref,2025-10-31,0.0,2.0,2,0,
+Advocacy Unified Network,4,,,Datacite,2025-10-27,,4.0,0,0,
+AlzPED,2,,,Datacite,2025-10-27,,2.0,1,0,
+American University Research Archive,2,,,Datacite,2025-10-27,,2.0,0,0,
+Apollo (previously DSpace@Cambridge),33,,,Datacite,2025-10-27,,33.0,8,3,
+Arcadia Science,32,,,Datacite,2025-10-27,,32.0,16,9,
+Bauhaus-Universität Weimar,20,,,Datacite,2025-10-27,,20.0,0,0,
+Bundesanstalt für Arbeitsschutz und Arbeitsmedizin (BAuA),7,,,Datacite,2025-10-27,,7.0,1,1,
+CDI B2Share,1,,,Datacite,2025-10-27,,1.0,1,0,
+CERIT-SC,1,,,Datacite,2025-10-27,,1.0,0,1,
+CERN Document Server,116,,,Datacite,2025-10-27,,116.0,25,68,
+CHALMERS UNIVERSITY OF TECHNOLOGY,1,,,Datacite,2025-10-27,,1.0,0,1,
+Caltech Library,81,,,Datacite,2025-10-27,,81.0,2,4,
+DTU Data,1,,,Datacite,2025-10-27,,1.0,0,0,
+Digital CSIC,75,,,Datacite,2025-10-27,,75.0,12,24,
+EPFL Infoscience,2,,,Datacite,2025-10-27,,2.0,1,1,
+EPub Bayreuth,37,,,Datacite,2025-10-27,,37.0,9,9,
+Emptiness,1,,,Datacite,2025-10-27,,1.0,1,0,
+FreiDok plus,5,,,Datacite,2025-10-27,,5.0,1,3,
+Georgia State University Repository,1,,,Datacite,2025-10-27,,1.0,0,1,
+HU Berlin - edoc-Server- Institutional Repository Humboldt-Universität zu Berlin,9,,,Datacite,2025-10-27,,9.0,6,1,
+Heriot-Watt University,1,,,Datacite,2025-10-27,,1.0,1,0,
+Hochschulbibliothek der Technischen Hochschule Brandenburg,1,,,Datacite,2025-10-27,,1.0,0,0,
+INRAE,1,,,Datacite,2025-10-27,,1.0,1,0,
+ISCPSI - Instituto Superior de Ciências Policiais e Segurança Interna,16,,,Datacite,2025-10-27,,16.0,1,0,
+ISTA Research Explorer,1,,,Datacite,2025-10-27,,1.0,0,0,
+Institut national d'études démographiques,40,,,Datacite,2025-10-27,,40.0,13,5,
+Institute for Advanced Study repository,4,,,Datacite,2025-10-27,,4.0,0,0,
+Istituto Nazionale di Fisica Nucleare. Centro Nazionale Analisi Fotogrammi,3,,,Datacite,2025-10-27,,3.0,0,3,
+J. Willard Marriott Library,1,,,Datacite,2025-10-27,,1.0,0,0,
+Jagiellonian University Medical College Portal for Management of Knowledge and Scientific Potential,1,,,Datacite,2025-10-27,,1.0,0,0,
+Julius Kühn-Institut,1,,,Datacite,2025-10-27,,1.0,0,0,
+KAPSARC Models,1,,,Datacite,2025-10-27,,1.0,0,0,
+Keele University,2,,,Datacite,2025-10-27,,2.0,0,0,
+Kyiv Academic University,2,,,Datacite,2025-10-27,,2.0,1,1,
+Leibniz Institute of Ecological Urban and Regional Development,1,,,Datacite,2025-10-27,,1.0,1,0,
+Leibniz Universität Hannover,13,,,Datacite,2025-10-27,,13.0,1,11,
+Materials Data Repository,4,,,Datacite,2025-10-27,,4.0,0,0,
+Mathematisches Forschungsinstitut Oberwolfach,1,,,Datacite,2025-10-27,,1.0,1,0,
+Max Planck Digital Library,1,,,Datacite,2025-10-27,,1.0,1,0,
+"Membership and Research Division, OCLC, Inc.",4,,,Datacite,2025-10-27,,4.0,0,0,
+Mines Repository,1,,,Datacite,2025-10-27,,1.0,1,0,
+NAKALA,50,,,Datacite,2025-10-27,,50.0,3,0,
+NRC Digital Repository,1,,,Datacite,2025-10-27,,1.0,0,0,
+Open Research Knowledge Graph (ORKG),35,,,Datacite,2025-10-27,,35.0,13,3,
+Open Science Framework,458,,,Datacite,2025-10-27,,458.0,73,339,
+Oroboros Instruments,57,,,Datacite,2025-10-27,,57.0,10,9,
+Otto-von-Guericke-Universität Magdeburg,45,,,Datacite,2025-10-27,,45.0,6,2,
+Oxford University Research Archive,149,,,Datacite,2025-10-27,,149.0,24,5,
+PUB - Publications at Bielefeld University,2,,,Datacite,2025-10-27,,2.0,0,0,
+Panteion University,4,,,Datacite,2025-10-27,,4.0,0,0,
+Pharmrxiv,1,,,Datacite,2025-10-27,,1.0,0,1,
+Psychology Archives,304,,,Datacite,2025-10-27,,304.0,51,76,
+Queen Mary University of London,1,,,Datacite,2025-10-27,,1.0,1,0,
+Repositorio Institucional E-docUR,1,,,Datacite,2025-10-27,,1.0,0,1,
+Res Musica,3,,,Datacite,2025-10-27,,3.0,0,1,
+Russian Agency for Digital Standardization,20,,,Datacite,2025-10-27,,20.0,0,0,
+SXS Collaboration,1,,,Datacite,2025-10-27,,1.0,0,1,
+Senckenberg Data & Metadata Repository,1,,,Datacite,2025-10-27,,1.0,0,0,
+"Staats- und Universitätsbibliothek Göttingen, Elektronisches Publizieren (EPU)",2,,,Datacite,2025-10-27,,2.0,1,0,
+TH OWL,1,,,Datacite,2025-10-27,,1.0,0,0,
+TIB Repositorium,5,,,Datacite,2025-10-27,,5.0,2,0,
+TUScholarShare,1,,,Datacite,2025-10-27,,1.0,1,0,
+Technische Hochschule Wildau,2,,,Datacite,2025-10-27,,2.0,0,0,
+Technische Universität Berlin – Universitätsbibliothek,17,,,Datacite,2025-10-27,,17.0,9,5,
+Technische Universität Dortmund,331,,,Datacite,2025-10-27,,331.0,6,5,
+The Open University,1,,,Datacite,2025-10-27,,1.0,0,0,
+Thüringer Universitäts- und Landesbibliothek,3,,,Datacite,2025-10-27,,3.0,1,1,
+UB Bochum,1,,,Datacite,2025-10-27,,1.0,0,0,
+Uni Genf,21,,,Datacite,2025-10-27,,21.0,2,1,
+University of Calgary,2,,,Datacite,2025-10-27,,2.0,1,1,
+University of Essex,2,,,Datacite,2025-10-27,,2.0,0,0,
+University of Limerick Institutional Repository,1,,,Datacite,2025-10-27,,1.0,0,1,
+University of Massachusetts (UMass) Amherst,44,,,Datacite,2025-10-27,,44.0,0,1,
+University of Massachusetts (UMass) Chan Medical School,3,,,Datacite,2025-10-27,,3.0,1,0,
+University of Michigan Library,66,,,Datacite,2025-10-27,,66.0,10,1,
+University of Sydney Library,2,,,Datacite,2025-10-27,,2.0,0,1,
+University of Texas Libraries,30,,,Datacite,2025-10-27,,30.0,2,1,
+University of Washington Libraries,1,,,Datacite,2025-10-27,,1.0,1,0,
+Universität des Saarlandes,256,,,Datacite,2025-10-27,,256.0,0,0,
+Universitäts- und Landesbibliothek Münster,14,,,Datacite,2025-10-27,,14.0,9,4,
+Universitäts- und Stadtbibliothek Köln,2,,,Datacite,2025-10-27,,2.0,0,0,
+Universitätsbibliothek Bamberg,10,,,Datacite,2025-10-27,,10.0,0,0,
+Universitätsbibliothek Eichstätt-Ingolstadt,1,,,Datacite,2025-10-27,,1.0,0,1,
+Universitätsbibliothek Erlangen-Nürnberg,7,,,Datacite,2025-10-27,,7.0,1,3,
+Universitätsbibliothek Gießen,163,,,Datacite,2025-10-27,,163.0,4,3,
+Universitätsbibliothek Stuttgart,69,,,Datacite,2025-10-27,,69.0,1,3,
+Universitätsbibliothek Tübingen,11,,,Datacite,2025-10-27,,11.0,0,11,
+Universitätsbibliothek der FU Berlin,5,,,Datacite,2025-10-27,,5.0,2,2,
+Université de technologie de Compiègne,2,,,Datacite,2025-10-27,,2.0,0,0,
+Uniwersytet Wrocławski,3,,,Datacite,2025-10-27,,3.0,0,2,
+WU Research,1837,,,Datacite,2025-10-27,,1837.0,34,28,
+Washington University in St. Louis Libraries,4,,,Datacite,2025-10-27,,4.0,0,0,
+WyoScholar,1,,,Datacite,2025-10-27,,1.0,1,0,
+York,3,,,Datacite,2025-10-27,,3.0,2,1,
+ZU Repository,1,,,Datacite,2025-10-27,,1.0,1,0,
+Zenodo,103145,,,Datacite,2025-10-27,,103145.0,10607,79997,
+arXiv,2861098,,,Datacite,2025-10-27,,2861098.0,243717,223850,
+mdw Repository,1,,,Datacite,2025-10-27,,1.0,0,0,
+1993 IEEE International Symposium on Circuits and Systems,19,,,OpenAlex,2025-10-22,,19.0,0,0,S4363604427
+2006 IEEE Antennas and Propagation Society International Symposium,22,,,OpenAlex,2025-10-22,,22.0,0,0,S4363605838
+2009 IEEE Conference on Computer Vision and Pattern Recognition,29,,,OpenAlex,2025-10-22,,29.0,0,0,S4363607795
+2011 IEEE/RSJ International Conference on Intelligent Robots and Systems,88,,,OpenAlex,2025-10-22,,88.0,0,0,S4363608614
+2015 IEEE Global Communications Conference (GLOBECOM),66,,,OpenAlex,2025-10-22,,66.0,0,0,S4363607712
+2017 IEEE International Ultrasonics Symposium (IUS),27,,,OpenAlex,2025-10-22,,27.0,0,0,S4363604678
+2017 Physics Education Research Conference Proceedings,71,,,OpenAlex,2025-10-22,,71.0,1,0,S4306498225
+2021 20th IEEE International Conference on Machine Learning and Applications (ICMLA),37,,,OpenAlex,2025-10-22,,37.0,0,0,S4363607906
+2021 29th European Signal Processing Conference (EUSIPCO),215,,,OpenAlex,2025-10-22,,215.0,0,0,S4363607854
+2021 60th IEEE Conference on Decision and Control (CDC),49,,,OpenAlex,2025-10-22,,49.0,0,0,S4363607724
+2021 IEEE 94th Vehicular Technology Conference (VTC2021-Fall),37,,,OpenAlex,2025-10-22,,37.0,0,0,S4363607774
+2021 IEEE International Conference on Big Data (Big Data),83,,,OpenAlex,2025-10-22,,83.0,0,0,S4363607718
+2021 IEEE International Conference on Bioinformatics and Biomedicine (BIBM),22,,,OpenAlex,2025-10-22,,22.0,0,0,S4363607735
+2021 IEEE International Conference on Robotics and Biomimetics (ROBIO),18,,,OpenAlex,2025-10-22,,18.0,0,0,S4363607846
+2021 IEEE Nuclear Science Symposium and Medical Imaging Conference (NSS/MIC),27,,,OpenAlex,2025-10-22,,27.0,0,0,S4363607784
+2021 IEEE Power &amp; Energy Society General Meeting (PESGM),21,,,OpenAlex,2025-10-22,,21.0,3,0,S4363606124
+2021 IEEE Vehicle Power and Propulsion Conference (VPPC),39,,,OpenAlex,2025-10-22,,39.0,0,0,S4363608327
+2021 IEEE/CVF International Conference on Computer Vision (ICCV),25,,,OpenAlex,2025-10-22,,25.0,0,0,S4363607764
+2021 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS),169,,,OpenAlex,2025-10-22,,169.0,0,0,S4363607734
+2021 International Conference on 3D Vision (3DV),20,,,OpenAlex,2025-10-22,,20.0,1,0,S4363608458
+2022 16th European Conference on Antennas and Propagation (EuCAP),158,,,OpenAlex,2025-10-22,,158.0,0,0,S4363607728
+2022 26th International Conference on Pattern Recognition (ICPR),133,,,OpenAlex,2025-10-22,,133.0,0,0,S4363607731
+2022 30th Mediterranean Conference on Control and Automation (MED),28,,,OpenAlex,2025-10-22,,28.0,0,0,S4363608151
+2022 American Control Conference (ACC),186,,,OpenAlex,2025-10-22,,186.0,1,0,S4363607732
+2022 European Control Conference (ECC),251,,,OpenAlex,2025-10-22,,251.0,0,0,S4363607908
+2022 IEEE 19th International Symposium on Biomedical Imaging (ISBI),128,,,OpenAlex,2025-10-22,,128.0,0,0,S4363605129
+2022 IEEE 95th Vehicular Technology Conference: (VTC2022-Spring),29,,,OpenAlex,2025-10-22,,29.0,0,0,S4363607744
+2022 IEEE Congress on Evolutionary Computation (CEC),16,,,OpenAlex,2025-10-22,,16.0,0,0,S4363605353
+2022 IEEE Energy Conversion Congress and Exposition (ECCE),16,,,OpenAlex,2025-10-22,,16.0,0,0,S4363604350
+2022 IEEE Globecom Workshops (GC Wkshps),41,,,OpenAlex,2025-10-22,,41.0,0,0,S4363605011
+2022 IEEE Industry Applications Society Annual Meeting (IAS),7,,,OpenAlex,2025-10-22,,7.0,0,0,S4363605619
+2022 IEEE Information Theory Workshop (ITW),44,,,OpenAlex,2025-10-22,,44.0,0,0,S4363606450
+2022 IEEE Intelligent Vehicles Symposium (IV),53,,,OpenAlex,2025-10-22,,53.0,0,0,S4363605370
+2022 IEEE International Conference on Communications Workshops (ICC Workshops),18,,,OpenAlex,2025-10-22,,18.0,0,0,S4363608034
+2022 IEEE International Conference on Environment and Electrical Engineering and 2022 IEEE Industrial and Commercial Power Systems Europe (EEEIC / I&amp;CPS Europe),28,,,OpenAlex,2025-10-22,,28.0,0,0,S4363607938
+2022 IEEE International Conference on Fuzzy Systems (FUZZ-IEEE),34,,,OpenAlex,2025-10-22,,34.0,0,0,S4363608205
+2022 IEEE International Conference on Image Processing (ICIP),137,,,OpenAlex,2025-10-22,,137.0,3,1,S4363607719
+2022 IEEE International Conference on Industrial Technology (ICIT),43,,,OpenAlex,2025-10-22,,43.0,0,0,S4363608411
+2022 IEEE International Conference on Multimedia and Expo (ICME),37,,,OpenAlex,2025-10-22,,37.0,4,0,S4363607799
+2022 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW),24,,,OpenAlex,2025-10-22,,24.0,0,0,S4363605440
+2022 IEEE International Reliability Physics Symposium (IRPS),24,,,OpenAlex,2025-10-22,,24.0,0,0,S4363605693
+2022 IEEE International Symposium on Circuits and Systems (ISCAS),58,,,OpenAlex,2025-10-22,,58.0,0,0,S4363604393
+2022 IEEE International Symposium on Information Theory (ISIT),150,,,OpenAlex,2025-10-22,,150.0,0,0,S4363604560
+2022 IEEE Spoken Language Technology Workshop (SLT),18,,,OpenAlex,2025-10-22,,18.0,0,0,S4363605953
+2022 IEEE Symposium on Computers and Communications (ISCC),27,,,OpenAlex,2025-10-22,,27.0,1,0,S4363605780
+2022 IEEE Wireless Communications and Networking Conference (WCNC),87,,,OpenAlex,2025-10-22,,87.0,0,0,S4363607776
+2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR),301,,,OpenAlex,2025-10-22,,301.0,2,1,S4363607701
+2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW),29,,,OpenAlex,2025-10-22,,29.0,5,0,S4363607748
+2022 IEEE/MTT-S International Microwave Symposium - IMS 2022,23,,,OpenAlex,2025-10-22,,23.0,0,0,S4363605108
+2022 International Conference on Electromagnetics in Advanced Applications (ICEAA),19,,,OpenAlex,2025-10-22,,19.0,0,0,S4363608188
+2022 International Conference on Robotics and Automation (ICRA),45,,,OpenAlex,2025-10-22,,45.0,0,0,S4363607759
+2022 International Conference on Unmanned Aircraft Systems (ICUAS),52,,,OpenAlex,2025-10-22,,52.0,0,0,S4363608079
+2022 International Joint Conference on Neural Networks (IJCNN),73,,,OpenAlex,2025-10-22,,73.0,5,0,S4363607707
+2022 International Symposium on Electromagnetic Compatibility – EMC Europe,36,,,OpenAlex,2025-10-22,,36.0,0,0,S4363605869
+28th AIAA/CEAS Aeroacoustics 2022 Conference,34,,,OpenAlex,2025-10-22,,34.0,0,0,S4363607867
+AAS Open Research,166,,,OpenAlex,2025-10-22,,166.0,0,0,S4210203035
+AEA Randomized Controlled Trials,59,,,OpenAlex,2025-10-22,,59.0,1,0,S4363604083
+AIAA Aviation 2019 Forum,18,,,OpenAlex,2025-10-22,,18.0,0,0,S4306501119
+AIAA SCITECH 2022 Forum,33,,,OpenAlex,2025-10-22,,33.0,10,0,S4363604160
+AIP conference proceedings,302,,,OpenAlex,2025-10-22,,302.0,0,0,S2764696622
+AMRC Open Research,36,,,OpenAlex,2025-10-22,,36.0,0,0,S4210230499
+Adaptive Optics Systems VI,22,,,OpenAlex,2025-10-22,,22.0,0,0,S4306500693
+Advances in Optical and Mechanical Technologies for Telescopes and Instrumentation III,18,,,OpenAlex,2025-10-22,,18.0,0,0,S4306500797
+American Control Conference,34,,,OpenAlex,2025-10-22,,34.0,0,0,S4306417662
+Annals of the Rheumatic Diseases,29,,,OpenAlex,2025-10-22,,29.0,0,0,S25650217
+Archimède. Archéologie et histoire ancienne,20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306502777
+Archive ouverte UNIGE (University of Geneva),17,,,OpenAlex,2025-10-22,,17.0,0,0,S4306402259
+Base Institutionnelle de Recherche de l'université Paris-Dauphine (BIRD) (University Paris-Dauphine),42,,,OpenAlex,2025-10-22,,42.0,0,0,S4306401007
+CERN Document Server (European Organization for Nuclear Research),72,,,OpenAlex,2025-10-22,,72.0,0,0,"S4306402195, S4306402194, S4377196256"
+CaltechAUTHORS (California Institute of Technology),86,,,OpenAlex,2025-10-22,,86.0,0,0,"S4306402161, S4306402162"
+CiteSeer X (The Pennsylvania State University),342,,,OpenAlex,2025-10-22,,342.0,0,0,S4306400349
+Conference on Lasers and Electro-Optics,22,,,OpenAlex,2025-10-22,,22.0,0,0,S4306418073
+DOAJ (DOAJ: Directory of Open Access Journals),251,,,OpenAlex,2025-10-22,,251.0,0,0,S4306401280
+DSpace (Centre National De La Recherche Scientifique),20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306400504
+DSpace@MIT (Massachusetts Institute of Technology),42,,,OpenAlex,2025-10-22,,42.0,0,0,S4306400425
+Data Archiving and Networked Services (DANS),34,,,OpenAlex,2025-10-22,,34.0,0,0,S4306401843
+Deep Blue (University of Michigan),19,,,OpenAlex,2025-10-22,,19.0,1,0,S4306400393
+Definitions,37,,,OpenAlex,2025-10-22,,37.0,0,0,S4363604056
+Econstor (Econstor),25,,,OpenAlex,2025-10-22,,25.0,0,0,S4306401696
+Europe PMC (PubMed Central),148,,,OpenAlex,2025-10-22,,148.0,0,0,S4306400806
+F1000Research,15445,,,OpenAlex,2025-10-22,,15445.0,1959,1326,"S4210239046, S2755217574"
+Fourth Huntsville gamma-ray burst symposium,20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306510843
+French digital mathematics library (Numdam),41,,,OpenAlex,2025-10-22,,41.0,0,0,S4306402264
+GLOBECOM 2022 - 2022 IEEE Global Communications Conference,35,,,OpenAlex,2025-10-22,,35.0,0,0,S4363607705
+Gates Open Research,831,,,OpenAlex,2025-10-22,,831.0,84,29,S4210224510
+Ghent University Academic Bibliography (Ghent University),20,,,OpenAlex,2025-10-22,,20.0,0,0,"S4306400478, S4306400477"
+Ground-based and Airborne Instrumentation for Astronomy VII,20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306511710
+HAL (Le Centre pour la Communication Scientifique Directe),1412447,,,OpenAlex,2025-10-22,,1412447.0,334,20,S4306402512
+HRB Open Research,629,,,OpenAlex,2025-10-22,,629.0,76,80,S4210186582
+Health and safety at work (Epoka University),34,,,OpenAlex,2025-10-22,,34.0,0,0,S4306400482
+High Energy Physics,33,,,OpenAlex,2025-10-22,,33.0,0,0,S4306512122
+"High-Energy Physics Literature Database (CERN, DESY, Fermilab, IHEP, and SLAC)",2,,,OpenAlex,2025-10-22,,2.0,0,0,S4306401136
+Hindawi Journal of Chemistry (Hindawi),27,,,OpenAlex,2025-10-22,,27.0,0,0,S4306400340
+IACR Cryptology ePrint Archive,13737,,,OpenAlex,2025-10-22,,13737.0,0,0,S2764847869
+"ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)",164,,,OpenAlex,2025-10-22,,164.0,2,1,S4363607702
+ICPSR Data Holdings,30,,,OpenAlex,2025-10-22,,30.0,0,0,S4363604084
+IECON 2020 The 46th Annual Conference of the IEEE Industrial Electronics Society,42,,,OpenAlex,2025-10-22,,42.0,0,0,S4363608618
+IEEE INFOCOM 2022 - IEEE Conference on Computer Communications,33,,,OpenAlex,2025-10-22,,33.0,0,0,S4363607980
+IEEE INFOCOM 2022 - IEEE Conference on Computer Communications Workshops (INFOCOM WKSHPS),14,,,OpenAlex,2025-10-22,,14.0,0,0,S4363607985
+IEEE Industry Applications Society Annual Meeting,25,,,OpenAlex,2025-10-22,,25.0,0,0,S4306418636
+IEEE Intelligent Vehicles Symposium,18,,,OpenAlex,2025-10-22,,18.0,0,0,S4306422571
+IEEE International Conference on Acoustics Speech and Signal Processing,92,,,OpenAlex,2025-10-22,,92.0,0,0,S4363607879
+IEEE International Conference on Communications,35,,,OpenAlex,2025-10-22,,35.0,0,0,S4393917539
+IEEE International Conference on Communications workshops,4,,,OpenAlex,2025-10-22,,4.0,0,0,S4393918252
+IEEE International Ultrasonics Symposium,30,,,OpenAlex,2025-10-22,,30.0,0,0,S4393917990
+IEEE MTT-S International Microwave Symposium digest,26,,,OpenAlex,2025-10-22,,26.0,0,0,S4210185519
+IEEE Sensors,43,,,OpenAlex,2025-10-22,,43.0,0,0,S4306418818
+IEEE Sensors Journal,1,,,OpenAlex,2025-10-22,,1.0,0,0,S189694085
+IFIP advances in information and communication technology,28,,,OpenAlex,2025-10-22,,28.0,0,0,S4210185096
+IGARSS 2022 - 2022 IEEE International Geoscience and Remote Sensing Symposium,22,,,OpenAlex,2025-10-22,,22.0,1,0,S4363604196
+INDIGO (University of Illinois at Chicago),46,,,OpenAlex,2025-10-22,,46.0,0,0,S4306402621
+Industrias Culturais (Universidade de Coimbra),20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306401026
+Institutional Archive of Ifremer (French Research Institute for Exploitation of the Sea),16,,,OpenAlex,2025-10-22,,16.0,0,0,S4377196267
+International Conference on Space Optics — ICSO 2020,25,,,OpenAlex,2025-10-22,,25.0,0,0,S4306513817
+Interspeech 2022,272,,,OpenAlex,2025-10-22,,272.0,24,0,S4363604309
+LA Referencia (Red Federada de Repositorios Institucionales de Publicaciones Científicas),98,,,OpenAlex,2025-10-22,,98.0,0,0,S4306402641
+Lecture notes in computer science,32,,,OpenAlex,2025-10-22,,32.0,2,5,S106296714
+Leibniz-Zentrum für Informatik (Schloss Dagstuhl),18,,,OpenAlex,2025-10-22,,18.0,0,0,S4306402524
+Letters in High Energy Physics,2,,,OpenAlex,2025-10-22,,2.0,0,0,S4210215366
+Lirias (KU Leuven),20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306401954
+MPG.PuRe (Max Planck Society),28,,,OpenAlex,2025-10-22,,28.0,0,0,"S4306400655, S4306400654"
+Maison des Sciences de l’Homme d’Aquitaine eBooks,31,,,OpenAlex,2025-10-22,,31.0,0,0,S4306463585
+Mathematics of Computation,42,,,OpenAlex,2025-10-22,,42.0,31,11,S102439543
+Medical Imaging 2018: Computer-Aided Diagnosis,17,,,OpenAlex,2025-10-22,,17.0,3,1,S4306519508
+Medical Imaging 2022: Image Processing,19,,,OpenAlex,2025-10-22,,19.0,4,0,S4363607561
+Nature Precedings,5209,,,OpenAlex,2025-10-22,,5209.0,0,0,S48744551
+ORCA Online Research @Cardiff (Cardiff University),16,,,OpenAlex,2025-10-22,,16.0,0,0,S4306401195
+OSTI OAI (U.S. Department of Energy Office of Scientific and Technical Information),104,,,OpenAlex,2025-10-22,,104.0,73,5,S4306402487
+Open Archive Toulouse Archive Ouverte (University of Toulouse),47,,,OpenAlex,2025-10-22,,47.0,0,0,S4306401987
+Open Repository and Bibliography (University of Luxembourg),16,,,OpenAlex,2025-10-22,,16.0,0,0,S4306401815
+OpenEdition (OpenEdition),104,,,OpenAlex,2025-10-22,,104.0,0,0,S4306402281
+Optical Fiber Communication Conference (OFC) 2022,31,,,OpenAlex,2025-10-22,,31.0,0,0,S4363607747
+Oxford University Research Archive (ORA) (University of Oxford),22,,,OpenAlex,2025-10-22,,22.0,0,0,S4306402636
+Physical Review B,2,,,OpenAlex,2025-10-22,,2.0,0,0,S6791298
+Physical Review Letters,1,,,OpenAlex,2025-10-22,,1.0,0,0,S24807848
+Physical review. B./Physical review. B,20,,,OpenAlex,2025-10-22,,20.0,0,0,S4210237713
+Physical review. D/Physical review. D.,11,,,OpenAlex,2025-10-22,,11.0,0,0,S4210238307
+Proceedings of 31st International Symposium on Lattice Field Theory LATTICE 2013 — PoS(LATTICE 2013),33,,,OpenAlex,2025-10-22,,33.0,0,0,S4306523381
+Proceedings of 36th International Cosmic Ray Conference — PoS(ICRC2019),219,,,OpenAlex,2025-10-22,,219.0,0,0,S4306523385
+"Proceedings of Corfu Summer Institute 2021 ""School and Workshops on Elementary Particle Physics and Gravity"" — PoS(CORFU2021)",38,,,OpenAlex,2025-10-22,,38.0,0,0,S4363608734
+Proceedings of International Conference on Hard and Electromagnetic Probes of High-Energy Nuclear Collisions — PoS(HardProbes2018),20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306523450
+Proceedings of The 32nd International Symposium on Lattice Field Theory — PoS(LATTICE2014),19,,,OpenAlex,2025-10-22,,19.0,0,0,S4306523781
+Proceedings of The 36th Annual International Symposium on Lattice Field Theory — PoS(LATTICE2018),60,,,OpenAlex,2025-10-22,,60.0,0,0,S4306523798
+Proceedings of The 39th International Conference on High Energy Physics — PoS(ICHEP2018),56,,,OpenAlex,2025-10-22,,56.0,0,0,S4306523803
+Proceedings of The European Physical Society Conference on High Energy Physics — PoS(EPS-HEP2021),72,,,OpenAlex,2025-10-22,,72.0,2,0,S4363608777
+Proceedings of The XXVII International Symposium on Lattice Field Theory — PoS(LAT2009),25,,,OpenAlex,2025-10-22,,25.0,0,0,S4306524384
+Proceedings of The XXVIII International Symposium on Lattice Field Theory — PoS(Lattice 2010),20,,,OpenAlex,2025-10-22,,20.0,0,0,S4306524383
+Proceedings of XIII Quark Confinement and the Hadron Spectrum — PoS(Confinement2018),26,,,OpenAlex,2025-10-22,,26.0,0,0,S4306524402
+Proceedings of XXIIIrd International Symposium on Lattice Field Theory — PoS(LAT2005),17,,,OpenAlex,2025-10-22,,17.0,0,0,S4306524405
+Proceedings of XXVI International Workshop on Deep-Inelastic Scattering and Related Subjects — PoS(DIS2018),17,,,OpenAlex,2025-10-22,,17.0,0,0,S4306524413
+Proceedings of the 14th International Conference on Agents and Artificial Intelligence,33,,,OpenAlex,2025-10-22,,33.0,0,0,S4363608837
+Proceedings of the 14th International Symposium on Nuclei in the Cosmos (NIC2016),22,,,OpenAlex,2025-10-22,,22.0,0,0,S4306523535
+Proceedings of the 15th International Joint Conference on Biomedical Engineering Systems and Technologies,20,,,OpenAlex,2025-10-22,,20.0,0,0,S4363608833
+Proceedings of the 15th International Joint Conference on e-Business and Telecommunications,16,,,OpenAlex,2025-10-22,,16.0,0,0,S4363609017
+Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing,52,,,OpenAlex,2025-10-22,,52.0,0,0,S4363608991
+Proceedings of the 2022 ACM SIGSAC Conference on Computer and Communications Security,46,,,OpenAlex,2025-10-22,,46.0,0,0,S4363608815
+Proceedings of the 2022 International Conference on Management of Data,27,,,OpenAlex,2025-10-22,,27.0,0,0,S4363608845
+Proceedings of the 30th ACM International Conference on Multimedia,224,,,OpenAlex,2025-10-22,,224.0,0,0,S4363608757
+Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval,40,,,OpenAlex,2025-10-22,,40.0,0,0,S4363608773
+Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers),46,,,OpenAlex,2025-10-22,,46.0,0,0,S4363608652
+Proceedings of the 8th International Conference on Quarks and Nuclear Physics (QNP2018),37,,,OpenAlex,2025-10-22,,37.0,0,0,S4306523926
+Proceedings of the Genetic and Evolutionary Computation Conference,43,,,OpenAlex,2025-10-22,,43.0,0,0,S4363608932
+Proceedings of the Genetic and Evolutionary Computation Conference Companion,9,,,OpenAlex,2025-10-22,,9.0,0,0,S4363608771
+Proceedings of the International Conference on Strongly Correlated Electron Systems (SCES2019),52,,,OpenAlex,2025-10-22,,52.0,0,0,S4306524156
+Prodinra (INRA Bordeaux-Aquitaine),19,,,OpenAlex,2025-10-22,,19.0,0,0,S4306400794
+Project Euclid (Cornell University),50,,,OpenAlex,2025-10-22,,50.0,0,0,S4306400787
+PsycEXTRA Dataset,67,,,OpenAlex,2025-10-22,,67.0,0,0,S4306524878
+PubMed Central,20,,,OpenAlex,2025-10-22,,20.0,7,0,S2764455111
+RePEc: Research Papers in Economics,660042,,,OpenAlex,2025-10-22,,660042.0,739,1396,S4306401271
+Repository for Publications and Research Data (ETH Zurich),25,,,OpenAlex,2025-10-22,,25.0,0,0,S4306402302
+SERVAL (Université de Lausanne),21,,,OpenAlex,2025-10-22,,21.0,0,0,S4306401797
+SPIRE (Sciences Po),143,,,OpenAlex,2025-10-22,,143.0,0,0,S4306400285
+SciPost Physics,17,,,OpenAlex,2025-10-22,,17.0,0,1,S4210195687
+SciPost Physics Core,2,,,OpenAlex,2025-10-22,,2.0,0,0,S4210231659
+SciPost Physics Lecture Notes,4,,,OpenAlex,2025-10-22,,4.0,0,0,S4210232719
+SciPost Physics Proceedings,3,,,OpenAlex,2025-10-22,,3.0,0,0,S4210196411
+Space Telescopes and Instrumentation 2022: Ultraviolet to Gamma Ray,28,,,OpenAlex,2025-10-22,,28.0,5,0,S4363605908
+Speech prosody,37,,,OpenAlex,2025-10-22,,37.0,0,0,S2764846564
+Springer Link (Chiba Institute of Technology),90,,,OpenAlex,2025-10-22,,90.0,0,0,S4306400744
+Springer eBooks,22,,,OpenAlex,2025-10-22,,22.0,0,0,S4306463937
+SpringerReference,18,,,OpenAlex,2025-10-22,,18.0,0,0,S4363604060
+Structural Health Monitoring,20,,,OpenAlex,2025-10-22,,20.0,0,0,S46950560
+UCL Discovery (University College London),28,,,OpenAlex,2025-10-22,,28.0,0,0,S4306400024
+Wellcome Open Research,4539,,,OpenAlex,2025-10-22,,4539.0,879,677,S4210218052
+White Rose Research Online (University of Leeds),17,,,OpenAlex,2025-10-22,,17.0,0,0,S4377196101
+"White Rose Research Online (University of Leeds, The University of Sheffield, University of York)",8,,,OpenAlex,2025-10-22,,8.0,0,0,S4306400854
+Zurich Open Repository and Archive (University of Zurich),21,,,OpenAlex,2025-10-22,,21.0,0,0,S4306401281
+eScholarship (California Digital Library),37,,,OpenAlex,2025-10-22,,37.0,0,0,S4306400115
+viXra,27265,,,OpenAlex,2025-10-22,,27265.0,0,0,S2883122597
