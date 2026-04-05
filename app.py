@@ -402,8 +402,15 @@ metadata["server_name"] = metadata["server_name"].astype(str).str.strip()
 summary = summary.merge(metadata, on="server_name", how="left")
 
 # Sidebar
-yr_min = int(yearly["year"].min())
-yr_max = int(yearly["year"].max())
+qp_yr_from = qp.get("yr_from")
+qp_yr_to = qp.get("yr_to")
+
+yr_min = int(yearly["year"].min()) if len(yearly) else 2000
+yr_max = int(yearly["year"].max()) if len(yearly) else 2025
+preferred_start_year = 1990
+
+yr_from_default = int(qp_yr_from) if qp_yr_from and str(qp_yr_from).isdigit() else max(yr_min, preferred_start_year)
+yr_to_default = int(qp_yr_to) if qp_yr_to and str(qp_yr_to).isdigit() else yr_max
 
 # Sidebar header + reset button
 sb_title_col, sb_btn_col = st.sidebar.columns([1, 1])
@@ -426,7 +433,7 @@ yr_from, yr_to = st.sidebar.slider(
     "Year range",
     yr_min,
     yr_max,
-    (yr_min, yr_max),
+    (max(yr_min, yr_from_default), min(yr_max, yr_to_default)),
     step=1,
     key="filter_year_range",
 )
