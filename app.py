@@ -32,82 +32,22 @@ FILTER_CONFIG = {
         "widget": "checkbox_yes_only",
     },
 
-    "domain_tags": {
-        "label": "Domain",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "region_scope_type": {
-        "label": "Region scope",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "region_label": {
-        "label": "Region",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "ownership_group": {
-        "label": "Ownership",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "acceptance_group": {
-        "label": "Acceptance",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "moderation_group": {
-        "label": "Moderation",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "language_group": {
-        "label": "Language",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "fee_model": {
-        "label": "Fees",
-        "type": "multivalue",
-        "group": "quick",
-    },
-    "source_role": {
-        "label": "Source role",
-        "type": "multivalue",
-        "group": "quick",
-    },
+    "domain_tags": {"label": "Domain", "type": "multivalue", "group": "quick"},
+    "region_scope_type": {"label": "Region scope", "type": "multivalue", "group": "quick"},
+    "region_label": {"label": "Region", "type": "multivalue", "group": "quick"},
+    "ownership_group": {"label": "Ownership", "type": "multivalue", "group": "quick"},
+    "acceptance_group": {"label": "Acceptance", "type": "multivalue", "group": "quick"},
+    "moderation_group": {"label": "Moderation", "type": "multivalue", "group": "quick"},
+    "language_group": {"label": "Language", "type": "multivalue", "group": "quick"},
+    "fee_model": {"label": "Fees", "type": "multivalue", "group": "quick"},
+    "source_role": {"label": "Source role", "type": "multivalue", "group": "quick"},
 
-    "submission_term_group": {
-        "label": "Submission terminology",
-        "type": "multivalue",
-        "group": "advanced",
-    },
-    "journal_integration_group": {
-        "label": "Journal integration",
-        "type": "multivalue",
-        "group": "advanced",
-    },
-    "versioning_group": {
-        "label": "Versioning",
-        "type": "multivalue",
-        "group": "advanced",
-    },
-    "indexing_group": {
-        "label": "Indexing",
-        "type": "multivalue",
-        "group": "advanced",
-    },
-    "preservation_group": {
-        "label": "Preservation",
-        "type": "multivalue",
-        "group": "advanced",
-    },
-    "peer_review_group": {
-        "label": "Peer review",
-        "type": "multivalue",
-        "group": "advanced",
-    },
+    "submission_term_group": {"label": "Submission terminology", "type": "multivalue", "group": "advanced"},
+    "journal_integration_group": {"label": "Journal integration", "type": "multivalue", "group": "advanced"},
+    "versioning_group": {"label": "Versioning", "type": "multivalue", "group": "advanced"},
+    "indexing_group": {"label": "Indexing", "type": "multivalue", "group": "advanced"},
+    "preservation_group": {"label": "Preservation", "type": "multivalue", "group": "advanced"},
+    "peer_review_group": {"label": "Peer review", "type": "multivalue", "group": "advanced"},
 }
 
 PROFILE_CONFIG = {
@@ -201,6 +141,16 @@ def _qp_bool(key: str, default: bool) -> bool:
     return str(v).lower() in ("1", "true", "yes", "y", "on")
 
 
+def _encode_list(vals):
+    return "|".join(quote(str(v), safe="") for v in vals)
+
+
+def _decode_list(s):
+    if not s:
+        return []
+    return [unquote(x) for x in str(s).split("|") if x != ""]
+
+
 def _update_qp_if_changed(**kvs):
     new_map = dict(qp)
     changed = False
@@ -216,14 +166,32 @@ def _update_qp_if_changed(**kvs):
             pass
 
 
-def _encode_list(vals):
-    return "|".join(quote(str(v), safe="") for v in vals)
+def reset_all_filters(current_section: str):
+    try:
+        st.query_params.clear()
+        st.query_params["section"] = current_section
+    except Exception:
+        pass
 
 
-def _decode_list(s):
-    if not s:
-        return []
-    return [unquote(x) for x in str(s).split("|") if x != ""]
+def init_filter_state_from_query(yr_min: int, yr_max: int, yr_from_default: int, yr_to_default: int):
+    if "filter_year_range" not in st.session_state:
+        st.session_state["filter_year_range"] = (
+            max(yr_min, yr_from_default),
+            min(yr_max, yr_to_default),
+        )
+
+    for col, cfg in FILTER_CONFIG.items():
+        key = f"filter_{col}"
+        qp_key = f"flt_{col}"
+
+        if key in st.session_state:
+            continue
+
+        if cfg.get("widget") == "checkbox_yes_only":
+            st.session_state[key] = _qp_bool(qp_key, False)
+        else:
+            st.session_state[key] = _decode_list(qp.get(qp_key, ""))
 
 
 @st.cache_data
@@ -512,7 +480,7 @@ summary["server_name"] = summary["server_name"].astype(str).str.strip()
 metadata["server_name"] = metadata["server_name"].astype(str).str.strip()
 summary = summary.merge(metadata, on="server_name", how="left")
 
-# Sidebar
+# preferred start year logic
 qp_yr_from = qp.get("yr_from")
 qp_yr_to = qp.get("yr_to")
 
@@ -523,10 +491,10 @@ preferred_start_year = 1990
 yr_from_default = int(qp_yr_from) if qp_yr_from and str(qp_yr_from).isdigit() else max(yr_min, preferred_start_year)
 yr_to_default = int(qp_yr_to) if qp_yr_to and str(qp_yr_to).isdigit() else yr_max
 
-# yr_min = int(yearly["year"].min())
-# yr_max = int(yearly["year"].max())
+# initialize from query params
+init_filter_state_from_query(yr_min, yr_max, yr_from_default, yr_to_default)
 
-# Sidebar header + reset button
+# sidebar
 sb_title_col, sb_btn_col = st.sidebar.columns([2, 1])
 
 with sb_title_col:
@@ -535,10 +503,7 @@ with sb_title_col:
 with sb_btn_col:
     st.markdown('<div class="compact-reset-wrap">', unsafe_allow_html=True)
     if st.button("Reset", key="reset_filters_sidebar", use_container_width=True):
-        try:
-            st.query_params.clear()
-        except Exception:
-            pass
+        reset_all_filters(section_key)
         st.session_state.clear()
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
@@ -547,7 +512,7 @@ yr_from, yr_to = st.sidebar.slider(
     "Year range",
     yr_min,
     yr_max,
-    (max(yr_min, yr_from_default), min(yr_max, yr_to_default)),
+    st.session_state["filter_year_range"],
     step=1,
     key="filter_year_range",
 )
@@ -564,17 +529,42 @@ for col, cfg in FILTER_CONFIG.items():
     widget_key = f"filter_{col}"
 
     if widget == "checkbox_yes_only":
-        filter_state[col] = st.sidebar.checkbox(label, value=False, key=widget_key)
+        st.sidebar.checkbox(label, key=widget_key)
     else:
         options = get_filter_options(summary, col, ftype)
-        filter_state[col] = st.sidebar.multiselect(label, options=options, key=widget_key)
+        st.sidebar.multiselect(label, options=options, key=widget_key)
+
+    filter_state[col] = st.session_state.get(widget_key)
 
 with st.sidebar.expander("Advanced filters", expanded=False):
     for col, cfg in FILTER_CONFIG.items():
         if cfg["group"] != "advanced" or col not in summary.columns:
             continue
+
+        widget_key = f"filter_{col}"
         options = get_filter_options(summary, col, cfg["type"])
-        filter_state[col] = st.multiselect(cfg["label"], options=options, key=f"filter_{col}")
+        st.multiselect(cfg["label"], options=options, key=widget_key)
+
+        filter_state[col] = st.session_state.get(widget_key)
+
+# mirror all filters to query params
+qp_updates = {
+    "section": section_key,
+    "yr_from": yr_from,
+    "yr_to": yr_to,
+}
+
+for col, cfg in FILTER_CONFIG.items():
+    qp_key = f"flt_{col}"
+    widget = cfg.get("widget")
+    val = filter_state.get(col)
+
+    if widget == "checkbox_yes_only":
+        qp_updates[qp_key] = "1" if val else ""
+    else:
+        qp_updates[qp_key] = _encode_list(val or [])
+
+_update_qp_if_changed(**qp_updates)
 
 show = summary.copy()
 for col, cfg in FILTER_CONFIG.items():
@@ -584,6 +574,10 @@ filtered_servers = sorted(show["server_name"].dropna().astype(str).unique().toli
 
 with st.sidebar.expander("Active filters", expanded=False):
     active_labels = []
+
+    if (yr_from, yr_to) != (yr_min, yr_max):
+        active_labels.append(f"Year range: {yr_from}–{yr_to}")
+
     for col, cfg in FILTER_CONFIG.items():
         val = filter_state.get(col)
         if not val:
@@ -597,7 +591,7 @@ with st.sidebar.expander("Active filters", expanded=False):
         for item in active_labels:
             st.caption(f"• {item}")
     else:
-        st.caption("No metadata filters applied.")
+        st.caption("No filters applied.")
 
 yearly_rng = yearly[(yearly["year"] >= yr_from) & (yearly["year"] <= yr_to)]
 yearly_rng = yearly_rng[yearly_rng["server_name"].isin(filtered_servers)]
@@ -681,14 +675,14 @@ elif section_key == "explorer":
         st.warning("No servers match the current filters.")
         st.stop()
 
-    search_term = st.text_input("Search a server", "")
+    search_term = st.text_input("Search a server", "", key="explorer_search_term")
     explorer_servers = filtered_servers if not search_term else [s for s in filtered_servers if search_term.lower() in s.lower()]
 
     if not explorer_servers:
         st.info("No sources match the current search.")
         st.stop()
 
-    sel = st.selectbox("Choose a source", explorer_servers)
+    sel = st.selectbox("Choose a source", explorer_servers, key="explorer_source_select")
 
     row_df = summary.loc[summary["server_name"] == sel].head(1)
     row = row_df.iloc[0] if not row_df.empty else pd.Series(dtype=object)
@@ -750,6 +744,7 @@ elif section_key == "compare":
         options=active_servers_in_range,
         default=active_servers_in_range[:min(3, len(active_servers_in_range))],
         max_selections=4,
+        key="compare_pick_sources",
     )
 
     if len(pick) < 2:
