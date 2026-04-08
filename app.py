@@ -17,7 +17,6 @@ st.set_page_config(
 load_css(extra=["assets/layout.css"])
 
 DATA_DIR = "data"
-# GOOGLE_SHEET_META_URL = None
 GOOGLE_SHEET_META_URL = "https://docs.google.com/spreadsheets/d/1qrWIC8II0HEzETcp1nFpJEVEKxYS0CkE/export?format=csv&gid=261027131"
 GOOGLE_SHEET_TTL_SECONDS = 300
 
@@ -26,22 +25,89 @@ section_key = qp.get("section", "overview")
 render_sticky_header(active_section=section_key)
 
 FILTER_CONFIG = {
-    "is_active_2026": {"label": "Active in 2026", "type": "boolean_ynu", "group": "quick", "widget": "checkbox_yes_only"},
-    "domain_tags": {"label": "Domain", "type": "multivalue", "group": "quick"},
-    "region_scope_type": {"label": "Region scope", "type": "categorical", "group": "quick"},
-    "region_label": {"label": "Region", "type": "categorical", "group": "quick"},
-    "ownership_group": {"label": "Ownership", "type": "categorical", "group": "quick"},
-    "acceptance_group": {"label": "Acceptance", "type": "categorical", "group": "quick"},
-    "moderation_group": {"label": "Moderation", "type": "categorical", "group": "quick"},
-    "language_group": {"label": "Language", "type": "categorical", "group": "quick"},
-    "fee_model": {"label": "Fees", "type": "categorical", "group": "quick"},
-    "source_role": {"label": "Source role", "type": "categorical", "group": "quick"},
-    "submission_term_group": {"label": "Submission terminology", "type": "categorical", "group": "advanced"},
-    "journal_integration_group": {"label": "Journal integration", "type": "categorical", "group": "advanced"},
-    "versioning_group": {"label": "Versioning", "type": "categorical", "group": "advanced"},
-    "indexing_group": {"label": "Indexing", "type": "categorical", "group": "advanced"},
-    "preservation_group": {"label": "Preservation", "type": "categorical", "group": "advanced"},
-    "peer_review_group": {"label": "Peer review", "type": "categorical", "group": "advanced"},
+    "is_active_2026": {
+        "label": "Active in 2026",
+        "type": "boolean_ynu",
+        "group": "quick",
+        "widget": "checkbox_yes_only",
+    },
+
+    "domain_tags": {
+        "label": "Domain",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "region_scope_type": {
+        "label": "Region scope",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "region_label": {
+        "label": "Region",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "ownership_group": {
+        "label": "Ownership",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "acceptance_group": {
+        "label": "Acceptance",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "moderation_group": {
+        "label": "Moderation",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "language_group": {
+        "label": "Language",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "fee_model": {
+        "label": "Fees",
+        "type": "multivalue",
+        "group": "quick",
+    },
+    "source_role": {
+        "label": "Source role",
+        "type": "multivalue",
+        "group": "quick",
+    },
+
+    "submission_term_group": {
+        "label": "Submission terminology",
+        "type": "multivalue",
+        "group": "advanced",
+    },
+    "journal_integration_group": {
+        "label": "Journal integration",
+        "type": "multivalue",
+        "group": "advanced",
+    },
+    "versioning_group": {
+        "label": "Versioning",
+        "type": "multivalue",
+        "group": "advanced",
+    },
+    "indexing_group": {
+        "label": "Indexing",
+        "type": "multivalue",
+        "group": "advanced",
+    },
+    "preservation_group": {
+        "label": "Preservation",
+        "type": "multivalue",
+        "group": "advanced",
+    },
+    "peer_review_group": {
+        "label": "Peer review",
+        "type": "multivalue",
+        "group": "advanced",
+    },
 }
 
 PROFILE_CONFIG = {
@@ -95,9 +161,24 @@ def _safe_int_series_sum(df: pd.DataFrame, col: str) -> int:
 
 
 def normalize_multivalue_cell(x: object) -> list[str]:
-    if pd.isna(x) or str(x).strip() == "":
+    if pd.isna(x):
         return []
-    return [v.strip() for v in str(x).split(";") if v.strip()]
+
+    s = str(x).strip()
+    if s == "" or s.lower() == "nan":
+        return []
+
+    parts = [p.strip() for p in s.split(";")]
+    parts = [p for p in parts if p not in ("", "nan", "None")]
+
+    seen = set()
+    clean = []
+    for p in parts:
+        if p not in seen:
+            seen.add(p)
+            clean.append(p)
+
+    return clean
 
 
 def format_profile_value(val):
@@ -225,7 +306,9 @@ def clean_metadata(df_raw: pd.DataFrame) -> pd.DataFrame:
 @st.cache_data
 def build_range_summary(yearly_enriched_rng: pd.DataFrame) -> pd.DataFrame:
     if yearly_enriched_rng.empty:
-        return pd.DataFrame(columns=["server_name", "count_preprints", "count_versioned", "count_published", "count_cross_server"])
+        return pd.DataFrame(
+            columns=["server_name", "count_preprints", "count_versioned", "count_published", "count_cross_server"]
+        )
     return (
         yearly_enriched_rng.groupby("server_name", as_index=False)
         .agg(
@@ -242,28 +325,50 @@ def build_range_summary(yearly_enriched_rng: pd.DataFrame) -> pd.DataFrame:
 def get_filter_options(df: pd.DataFrame, col: str, filter_type: str) -> list[str]:
     if col not in df.columns:
         return []
+
     if filter_type == "multivalue":
-        vals = df[col].dropna().apply(normalize_multivalue_cell).explode().dropna().astype(str).str.strip()
+        vals = (
+            df[col]
+            .dropna()
+            .apply(normalize_multivalue_cell)
+            .explode()
+            .dropna()
+            .astype(str)
+            .str.strip()
+        )
         vals = vals[vals != ""]
         return sorted(vals.unique().tolist())
+
     vals = df[col].dropna().astype(str).str.strip()
     vals = vals[vals != ""]
     return sorted(vals.unique().tolist())
 
 
-def apply_dynamic_filter(df: pd.DataFrame, col: str, selected, filter_type: str, widget_type: str | None = None) -> pd.DataFrame:
+def apply_dynamic_filter(
+    df: pd.DataFrame,
+    col: str,
+    selected,
+    filter_type: str,
+    widget_type: str | None = None
+) -> pd.DataFrame:
     if col not in df.columns:
         return df
+
     if widget_type == "checkbox_yes_only":
         if not selected:
             return df
         return df[df[col].astype(str).str.strip() == "Yes"]
+
     if not selected:
         return df
+
     if filter_type == "multivalue":
-        selected_set = set(selected)
-        mask = df[col].apply(lambda x: len(selected_set.intersection(normalize_multivalue_cell(x))) > 0)
+        selected_set = {str(v).strip() for v in selected if str(v).strip()}
+        mask = df[col].apply(
+            lambda x: len(selected_set.intersection(set(normalize_multivalue_cell(x)))) > 0
+        )
         return df[mask]
+
     return df[df[col].astype(str).isin(selected)]
 
 
@@ -370,14 +475,13 @@ def read_md(path):
         return f"⚠️ Missing file: {path}"
 
 
-# Load files
 sum_path = _find_file("summary")
 yr_path = _find_file("yearly")
 yr_enriched_path = _find_file("yearly_long_enriched")
 meta_path = _find_file("server_metadata_clean")
 
-if not sum_path or not yr_path or not yr_enriched_path or not meta_path:
-    st.error("Missing files in data/: summary.csv, yearly.csv, yearly_long_enriched.csv, server_metadata_clean.csv")
+if not sum_path or not yr_path or not yr_enriched_path:
+    st.error("Missing files in data/: summary.csv, yearly.csv, yearly_long_enriched.csv")
     st.stop()
 
 summary_raw = read_any(sum_path)
@@ -388,8 +492,15 @@ if GOOGLE_SHEET_META_URL:
     try:
         meta_raw = load_google_sheet_csv(GOOGLE_SHEET_META_URL)
     except Exception:
-        meta_raw = read_any(meta_path)
+        if meta_path:
+            meta_raw = read_any(meta_path)
+        else:
+            st.error("Google Sheet metadata failed and no local fallback metadata file was found.")
+            st.stop()
 else:
+    if not meta_path:
+        st.error("Missing metadata file: data/server_metadata_clean.csv")
+        st.stop()
     meta_raw = read_any(meta_path)
 
 summary = clean_summary(summary_raw)
@@ -412,8 +523,11 @@ preferred_start_year = 1990
 yr_from_default = int(qp_yr_from) if qp_yr_from and str(qp_yr_from).isdigit() else max(yr_min, preferred_start_year)
 yr_to_default = int(qp_yr_to) if qp_yr_to and str(qp_yr_to).isdigit() else yr_max
 
+# yr_min = int(yearly["year"].min())
+# yr_max = int(yearly["year"].max())
+
 # Sidebar header + reset button
-sb_title_col, sb_btn_col = st.sidebar.columns([1, 1])
+sb_title_col, sb_btn_col = st.sidebar.columns([2, 1])
 
 with sb_title_col:
     st.markdown("## Quick filters")
@@ -439,13 +553,14 @@ yr_from, yr_to = st.sidebar.slider(
 )
 
 filter_state = {}
+
 for col, cfg in FILTER_CONFIG.items():
     if cfg["group"] != "quick" or col not in summary.columns:
         continue
+
     label = cfg["label"]
     ftype = cfg["type"]
     widget = cfg.get("widget")
-
     widget_key = f"filter_{col}"
 
     if widget == "checkbox_yes_only":
@@ -477,6 +592,7 @@ with st.sidebar.expander("Active filters", expanded=False):
             active_labels.append(cfg["label"])
         else:
             active_labels.append(f"{cfg['label']}: {', '.join(val)}")
+
     if active_labels:
         for item in active_labels:
             st.caption(f"• {item}")
@@ -490,7 +606,9 @@ yearly_enriched_rng = yearly_enriched[(yearly_enriched["year"] >= yr_from) & (ye
 yearly_enriched_rng = yearly_enriched_rng[yearly_enriched_rng["server_name"].isin(filtered_servers)]
 
 range_summary = build_range_summary(yearly_enriched_rng)
-active_servers_in_range = sorted(yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].dropna().astype(str).unique().tolist())
+active_servers_in_range = sorted(
+    yearly_rng.loc[yearly_rng["count"] > 0, "server_name"].dropna().astype(str).unique().tolist()
+)
 
 base_palette = px.colors.qualitative.Plotly + px.colors.qualitative.D3 + px.colors.qualitative.Set3
 color_map = {name: base_palette[i % len(base_palette)] for i, name in enumerate(filtered_servers)}
@@ -500,7 +618,6 @@ if "collection_date" in summary.columns and summary["collection_date"].notna().a
     if pd.notna(last_dt):
         st.caption(f"Last updated (collection_date): **{last_dt.date()}**")
 
-# Overview
 if section_key == "overview":
     if len(filtered_servers) == 0:
         st.warning("No servers match the current filters.")
@@ -537,7 +654,11 @@ if section_key == "overview":
     st.markdown("---")
     st.write("**Top sources**")
 
-    ranking = range_summary[["server_name", "count_preprints"]].rename(columns={"count_preprints": "total"}).sort_values("total", ascending=False)
+    ranking = (
+        range_summary[["server_name", "count_preprints"]]
+        .rename(columns={"count_preprints": "total"})
+        .sort_values("total", ascending=False)
+    )
 
     if ranking.empty:
         st.info("No sources to show.")
@@ -555,7 +676,6 @@ if section_key == "overview":
         fig_bar.update_layout(showlegend=False, height=min(220 + 28 * len(top_df), 900))
         st.plotly_chart(fig_bar, width="stretch")
 
-# Explorer
 elif section_key == "explorer":
     if len(filtered_servers) == 0:
         st.warning("No servers match the current filters.")
@@ -608,17 +728,30 @@ elif section_key == "explorer":
         if sv_nz.empty:
             st.info("No yearly preprints for this server.")
         else:
-            fig = px.line(sv_nz, x="year", y="count", markers=True, title=f"{sel} • yearly preprints", color="server_name", color_discrete_map=color_map)
+            fig = px.line(
+                sv_nz,
+                x="year",
+                y="count",
+                markers=True,
+                title=f"{sel} • yearly preprints",
+                color="server_name",
+                color_discrete_map=color_map
+            )
             fig.update_layout(showlegend=False)
             st.plotly_chart(fig, width="stretch")
 
-# Compare
 elif section_key == "compare":
     if len(active_servers_in_range) < 2:
         st.info("Need at least two active sources in range.")
         st.stop()
 
-    pick = st.multiselect("Pick 2–4 sources", options=active_servers_in_range, default=active_servers_in_range[:min(3, len(active_servers_in_range))], max_selections=4)
+    pick = st.multiselect(
+        "Pick 2–4 sources",
+        options=active_servers_in_range,
+        default=active_servers_in_range[:min(3, len(active_servers_in_range))],
+        max_selections=4,
+    )
+
     if len(pick) < 2:
         st.info("Select at least two sources to compare.")
         st.stop()
@@ -633,7 +766,15 @@ elif section_key == "compare":
     if cmp.empty:
         st.info("No non-zero data for chosen sources.")
     else:
-        fig_cmp = px.line(cmp, x="year", y="count", color="server_name", markers=True, title=f"Comparison • {yr_from}–{yr_to}", color_discrete_map=color_map)
+        fig_cmp = px.line(
+            cmp,
+            x="year",
+            y="count",
+            color="server_name",
+            markers=True,
+            title=f"Comparison • {yr_from}–{yr_to}",
+            color_discrete_map=color_map,
+        )
         st.plotly_chart(fig_cmp, width="stretch")
 
     st.markdown("### Metric comparison")
@@ -646,12 +787,10 @@ elif section_key == "compare":
     else:
         st.dataframe(meta_cmp, width="stretch", hide_index=True)
 
-# Data
 elif section_key == "data":
     st.header("🗂️ Data")
     st.dataframe(summary.head(200), width="stretch", hide_index=True)
 
-# About
 elif section_key == "about":
     st.header("ℹ️ About this app")
     tabs = st.tabs(["Overview", "Methods", "Using the app", "Team & Contact", "Changelog"])
